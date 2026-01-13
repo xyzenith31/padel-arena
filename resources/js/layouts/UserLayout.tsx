@@ -42,7 +42,7 @@ export default function UserLayout() {
                                     transition={{ duration: 0.5 }}
                                 >
                                     <img 
-                                        src="/logosidenbg.png" 
+                                        src="/logonbg.png" 
                                         alt="Logo" 
                                         className="h-10 w-auto drop-shadow-sm group-hover:drop-shadow-md transition-all" 
                                     />
