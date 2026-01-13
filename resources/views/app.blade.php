@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Pitstop</title>
+    <title>Padel Arena</title>
     <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
-    <link rel="icon" type="image/png" href="{{ asset('logothumbnail-nbg.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('logonbg.png') }}">
     @viteReactRefresh
     @vite([
         'resources/js/app.tsx',

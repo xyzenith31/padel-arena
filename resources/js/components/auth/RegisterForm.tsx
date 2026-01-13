@@ -183,18 +183,18 @@ export default function RegisterForm() {
             />
 
             <form onSubmit={handlePreSubmit} className="space-y-4">
-                <div className="text-center mb-6">
-                    <h2 className="text-xl font-bold text-gray-800">Buat Akun Baru</h2>
-                    <p className="text-gray-500 text-sm mt-1">Lengkapi data untuk mulai bergabung</p>
+                <div className="text-center mb-8">
+                    <h2 className="text-3xl font-black text-slate-800 tracking-tight mb-2">Buat Akun Baru</h2>
+                    <p className="text-slate-500 text-sm font-medium">Lengkapi data untuk bergabung di Padel Arena.</p>
                 </div>
                 
                 <Input 
                     label="Nama Lengkap"
                     name="name" 
                     value={data.name} 
-                    placeholder="John Doe" 
+                    placeholder="Hasbullah Rangkuti" 
                     onChange={handleChange} 
-                    icon={<User size={18} />}
+                    icon={<User size={20} />}
                     required 
                 />
                 
@@ -202,9 +202,9 @@ export default function RegisterForm() {
                     label="Username"
                     name="username" 
                     value={data.username} 
-                    placeholder="johndoe" 
+                    placeholder="Contoh: hasbullahrangkuti" 
                     onChange={handleChange} 
-                    icon={<AtSign size={18} />}
+                    icon={<AtSign size={20} />}
                     required 
                 />
                 
@@ -213,9 +213,9 @@ export default function RegisterForm() {
                     type="email" 
                     name="email" 
                     value={data.email} 
-                    placeholder="nama@email.com" 
+                    placeholder="hasbullahrangkuti@email.com" 
                     onChange={handleChange} 
-                    icon={<Mail size={18} />}
+                    icon={<Mail size={20} />}
                     required 
                 />
                 
@@ -223,9 +223,9 @@ export default function RegisterForm() {
                     label="Nomor Ponsel"
                     name="phone_number" 
                     value={data.phone_number} 
-                    placeholder="0812..." 
+                    placeholder="0812xxxx" 
                     onChange={handleChange} 
-                    icon={<Phone size={18} />}
+                    icon={<Phone size={20} />}
                     required 
                 />
                 
@@ -235,7 +235,7 @@ export default function RegisterForm() {
                     name="date_of_birth" 
                     value={data.date_of_birth} 
                     onChange={handleChange} 
-                    icon={<Calendar size={18} />}
+                    icon={<Calendar size={20} />}
                     required 
                 />
                 
@@ -244,9 +244,9 @@ export default function RegisterForm() {
                     type="password" 
                     name="password" 
                     value={data.password} 
-                    placeholder="••••••••" 
+                    placeholder="Min 8 karakter" 
                     onChange={handleChange} 
-                    icon={<Lock size={18} />}
+                    icon={<Lock size={20} />}
                     required 
                 />
                 
@@ -255,22 +255,25 @@ export default function RegisterForm() {
                     type="password" 
                     name="password_confirmation" 
                     value={data.password_confirmation} 
-                    placeholder="••••••••" 
+                    placeholder="Ulangi password" 
                     onChange={handleChange} 
-                    icon={<Lock size={18} />}
+                    icon={<Lock size={20} />}
                     required 
                 />
                 
                 <motion.button 
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
+                    whileHover={{ scale: 1.02, boxShadow: "0 10px 25px -5px rgba(234, 179, 8, 0.4)" }}
+                    whileTap={{ scale: 0.98 }}
                     type="submit" 
                     disabled={processing}
-                    className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-2"
+                    className="w-full mt-6 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-yellow-500/30 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-2 text-sm tracking-wide uppercase"
                 >
-                    {processing && <Loader2 className="animate-spin" size={20} />}
+                    {processing ? (
+                         <Loader2 className="animate-spin" size={20} />
+                    ) : (
+                         <ArrowRight size={20} />
+                    )}
                     {processing ? 'Memproses...' : 'Daftar Sekarang'}
-                    {!processing && <ArrowRight size={18} />}
                 </motion.button>
             </form>
         </>

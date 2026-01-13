@@ -24,7 +24,7 @@
         <p>Kode ini akan kedaluwarsa dalam 10 menit. Jangan berikan kode ini kepada siapa pun.</p>
         
         <div class="footer">
-            &copy; {{ date('Y') }} Pitstop Project. All rights reserved.
+            &copy; {{ date('Y') }} Padel Arena. All rights reserved.
         </div>
     </div>
 </body>

@@ -3,7 +3,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Loader2, CheckCircle, ShieldCheck } from 'lucide-react';
 import Input from '../../components/ui/Input';
-import Notification, { NotificationType } from '../../components/ui/Notification'; // Import Notification
+import Notification, { NotificationType } from '../../components/ui/Notification'; 
 
 interface Props {
     email: string;
@@ -104,31 +104,31 @@ export default function VerificationForm({ email, onSuccess }: Props) {
             />
 
             <form onSubmit={submit} className="space-y-6">
-                <div className="space-y-2">
+                <div className="space-y-3">
                     <Input
-                        label="Kode Verifikasi (6 Angka)"
+                        label="Kode Verifikasi (OTP)"
                         type="text"
                         name="code"
                         value={code}
                         onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))}
                         maxLength={6}
                         placeholder="123456"
-                        className="text-center text-2xl tracking-[0.5em] font-bold py-4 font-mono" // font-mono agar lebar angka sama
-                        icon={<ShieldCheck size={20} />}
+                        className="text-center text-3xl tracking-[0.5em] font-black py-5 font-mono placeholder:tracking-normal placeholder:font-normal placeholder:text-lg"
+                        icon={<ShieldCheck size={24} />}
                         required
                         autoFocus
                     />
-                    <p className="text-xs text-gray-400 text-center">
-                        Pastikan kode sesuai dengan yang dikirim ke email Anda.
+                    <p className="text-xs text-slate-400 text-center font-medium">
+                        Cek folder <span className="text-slate-600 font-bold">Inbox</span> atau <span className="text-slate-600 font-bold">Spam</span> di email Anda.
                     </p>
                 </div>
 
                 <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
+                    whileHover={{ scale: 1.02, boxShadow: "0 10px 25px -5px rgba(234, 179, 8, 0.4)" }}
+                    whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={processing || code.length < 6}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-2"
+                    className="w-full bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-yellow-500/30 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-2 text-sm tracking-wide uppercase"
                 >
                     {processing ? (
                         <>
@@ -138,7 +138,7 @@ export default function VerificationForm({ email, onSuccess }: Props) {
                     ) : (
                         <>
                             <span>Verifikasi Akun</span>
-                            <CheckCircle size={18} />
+                            <CheckCircle size={20} />
                         </>
                     )}
                 </motion.button>

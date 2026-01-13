@@ -9,7 +9,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 interface InputProps extends HTMLMotionProps<"input"> {
-    label: string;
+    label?: string;
     error?: string;
     icon?: React.ReactNode;
 }
@@ -20,14 +20,16 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         const isPasswordField = type === 'password';
 
         return (
-            <div className="space-y-1.5">
-                <label className="block text-sm font-semibold text-gray-700 ml-1">
-                    {label}
-                </label>
+            <div className="space-y-1.5 w-full">
+                {label && (
+                    <label className="block text-sm font-bold text-slate-700 ml-1">
+                        {label}
+                    </label>
+                )}
+                
                 <div className="relative group">
-                    {/* LEFT ICON */}
                     {icon && (
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 transition-colors pointer-events-none z-10">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-yellow-500 transition-colors pointer-events-none z-10">
                             {icon}
                         </div>
                     )}
@@ -38,12 +40,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                         whileFocus={{ scale: 1.01 }}
                         transition={{ type: "spring", stiffness: 300, damping: 20 }}
                         className={cn(
-                            "w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl px-4 py-3 outline-none transition-all duration-200",
-                            "focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10",
-                            "placeholder:text-gray-400",
-                            icon ? "pl-10" : "", 
+                            "w-full bg-white border border-slate-200 text-slate-800 font-medium rounded-xl px-4 py-3.5 outline-none transition-all duration-300",
+                            "focus:bg-white focus:border-yellow-400 focus:ring-4 focus:ring-yellow-100/50",
+                            "placeholder:text-slate-400 placeholder:font-normal",
+                            icon ? "pl-11" : "", 
                             isPasswordField ? "pr-12" : "", 
-                            error ? "border-red-500 focus:border-red-500 focus:ring-red-500/10 bg-red-50" : "",
+                            error ? "border-red-500 focus:border-red-500 focus:ring-red-500/10 bg-red-50" : "hover:border-yellow-200",
                             className
                         )}
                         {...props}
@@ -53,7 +55,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors h-10 w-10 rounded-full hover:bg-blue-50 focus:outline-none flex items-center justify-center z-20"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-yellow-600 transition-colors h-9 w-9 rounded-full hover:bg-yellow-50 focus:outline-none flex items-center justify-center z-20"
                         >
                             <AnimatePresence initial={false} mode="popLayout">
                                 {showPassword ? (
@@ -70,7 +72,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                                 ) : (
                                     <motion.div
                                         key="eye-on"
-                                        initial={{ opacity: 0, rotate: -45, scale: 0.5 }}
+                                        initial={{ opacity: 0, rotate: -45, scale: 0.5 }} 
                                         animate={{ opacity: 1, rotate: 0, scale: 1 }}
                                         exit={{ opacity: 0, rotate: 45, scale: 0.5 }}
                                         transition={{ type: 'spring', stiffness: 300, damping: 20, duration: 0.2 }}
@@ -94,7 +96,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                     <motion.p 
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-red-500 text-xs ml-1 font-medium"
+                        className="text-red-500 text-xs ml-1 font-bold flex items-center gap-1"
                     >
                         {error}
                     </motion.p>

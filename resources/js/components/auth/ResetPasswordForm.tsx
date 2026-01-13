@@ -20,12 +20,10 @@ interface NotificationState {
 export default function ResetPasswordForm() {
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
-    
     const { resetPassword } = useAuth();
     const [searchParams] = useSearchParams(); 
     const location = useLocation();
     const [isSubmitting, setIsSubmitting] = useState(false);
-
     const [notif, setNotif] = useState<NotificationState>({
         isOpen: false,
         type: 'info',
@@ -160,8 +158,8 @@ export default function ResetPasswordForm() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    icon={<Lock size={18} />}
+                    placeholder="Minimal 8 karakter"
+                    icon={<Lock size={20} />}
                     required
                     autoFocus
                 />
@@ -171,17 +169,17 @@ export default function ResetPasswordForm() {
                     type="password"
                     value={passwordConfirmation}
                     onChange={(e) => setPasswordConfirmation(e.target.value)}
-                    placeholder="••••••••"
-                    icon={<Lock size={18} />}
+                    placeholder="Ulangi password baru"
+                    icon={<Lock size={20} />}
                     required
                 />
 
                 <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
+                    whileHover={{ scale: 1.02, boxShadow: "0 10px 25px -5px rgba(234, 179, 8, 0.4)" }}
+                    whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-2"
+                    className="w-full mt-4 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-yellow-500/30 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-2 text-sm tracking-wide uppercase"
                 >
                     {isSubmitting ? (
                         <>
@@ -191,7 +189,7 @@ export default function ResetPasswordForm() {
                     ) : (
                         <>
                             <span>Simpan & Masuk</span>
-                            <Save size={18} />
+                            <Save size={20} />
                         </>
                     )}
                 </motion.button>

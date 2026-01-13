@@ -65,7 +65,7 @@ export default function VerificationPage() {
             type: 'info',
             title: 'Masuk Tanpa Ganti Password?',
             message: 'Apakah Anda yakin ingin langsung masuk ke dashboard tanpa membuat password baru?',
-            singleButton: false, // Tampilkan tombol Batal & Oke
+            singleButton: false, 
             confirmText: 'Ya, Masuk',
             cancelText: 'Batal',
             onConfirm: () => {
@@ -96,20 +96,20 @@ export default function VerificationPage() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                    className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
+                    className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 ring-4 ring-green-50 border border-green-200"
                 >
-                    <Check className="w-10 h-10 text-green-600" strokeWidth={3} />
+                    <Check className="w-12 h-12 text-green-600" strokeWidth={4} />
                 </motion.div>
                 
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Verifikasi Berhasil!</h2>
-                <p className="text-gray-500 mb-8 text-sm max-w-xs mx-auto">
-                    Identitas Anda telah terkonfirmasi. Silakan pilih langkah selanjutnya.
+                <h2 className="text-3xl font-black text-slate-800 mb-2 tracking-tight">Verifikasi Berhasil!</h2>
+                <p className="text-slate-500 mb-8 text-sm max-w-xs mx-auto font-medium">
+                    Identitas Anda telah terkonfirmasi. Apa yang ingin Anda lakukan selanjutnya?
                 </p>
 
-                <div className="space-y-3">
+                <div className="space-y-4">
                     <button
                         onClick={() => navigate('/reset-password')}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all flex justify-center items-center gap-2"
+                        className="w-full bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-yellow-500/30 transition-all flex justify-center items-center gap-2 uppercase tracking-wide text-sm"
                     >
                         <Lock size={18} />
                         <span>Buat Password Baru</span>
@@ -117,7 +117,7 @@ export default function VerificationPage() {
                     
                     <button
                          onClick={handleDashboardClick}
-                         className="w-full bg-white border border-gray-200 text-gray-700 font-semibold py-3.5 rounded-xl hover:bg-gray-50 transition-all flex justify-center items-center gap-2"
+                         className="w-full bg-white border border-slate-200 text-slate-600 font-bold py-4 rounded-xl hover:bg-slate-50 hover:text-slate-800 transition-all flex justify-center items-center gap-2"
                     >
                         <LayoutDashboard size={18} />
                         <span>Masuk ke Dashboard</span>
@@ -129,26 +129,28 @@ export default function VerificationPage() {
 
     return (
         <div>
-            {/* Header */}
-            <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-800">Verifikasi Email</h2>
-                <p className="text-gray-500 text-sm mt-2 leading-relaxed">
+            <div className="text-center mb-10">
+                <h2 className="text-3xl font-black text-slate-800 tracking-tight">Verifikasi Email</h2>
+                <p className="text-slate-500 text-sm mt-3 leading-relaxed font-medium">
                     Kami telah mengirimkan kode 6 angka ke: <br/>
-                    <span className="font-semibold text-gray-800">{email}</span>
+                    <span className="inline-block mt-2 px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full font-bold border border-yellow-200">
+                        {email}
+                    </span>
                 </p>
             </div>
 
             <VerificationForm email={email} onSuccess={handleSuccess} />
-            <div className="mt-8 flex items-center justify-center gap-2 text-sm text-gray-500">
+            
+            <div className="mt-10 flex items-center justify-center gap-2 text-sm text-slate-500 font-medium">
                 <span>Salah email?</span>
                 
                 <Link
                     to="/login"
-                    className="font-bold text-blue-600 relative group transition-colors hover:text-blue-700 flex items-center gap-1"
+                    className="font-bold text-yellow-600 relative group transition-colors hover:text-yellow-700 flex items-center gap-1"
                 >
-                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform duration-300" />
-                    <span>Kembali ke Login</span>
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform duration-300" strokeWidth={2.5} />
+                    <span className="relative z-10">Kembali ke Login</span>
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-yellow-500 transition-all duration-300 group-hover:w-full"></span>
                 </Link>
             </div>
         </div>

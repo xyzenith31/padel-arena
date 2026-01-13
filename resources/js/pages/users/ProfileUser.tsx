@@ -3,7 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     User, Mail, Phone, Lock, Camera, Trash2, 
-    Edit2, Save, X, ShieldCheck, CheckCircle2 
+    Edit2, Save, X, ShieldCheck, CheckCircle2,
+    Sparkles, Key
 } from 'lucide-react';
 import Notification, { NotificationType } from '../../components/ui/Notification';
 
@@ -26,34 +27,39 @@ const EditModal = ({ isOpen, onClose, title, children, onSubmit, isLoading }: Ed
                         animate={{ opacity: 1 }} 
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+                        className="absolute inset-0 bg-yellow-950/20 backdrop-blur-sm"
                     />
                     <motion.div 
-                        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                        initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
-                        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                        exit={{ scale: 0.9, opacity: 0, y: 20 }}
                         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                        className="bg-white rounded-2xl shadow-2xl w-full max-w-md relative z-10 overflow-hidden"
+                        className="bg-white rounded-3xl shadow-[0_20px_60px_-15px_rgba(234,179,8,0.3)] w-full max-w-md relative z-10 overflow-hidden border border-yellow-100"
                     >
-                        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
-                                <Edit2 size={18} className="text-blue-600" />
+                        <div className="px-6 py-5 border-b border-yellow-50 flex justify-between items-center bg-gradient-to-r from-yellow-50/50 to-white">
+                            <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <div className="p-1.5 bg-yellow-100 rounded-lg text-yellow-600">
+                                    <Edit2 size={16} />
+                                </div>
                                 {title}
                             </h3>
-                            <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition-colors">
+                            <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-yellow-50 transition-colors">
                                 <X size={20} />
                             </button>
                         </div>
+                        
                         <form onSubmit={onSubmit}>
                             <div className="p-6 space-y-5">{children}</div>
-                            <div className="px-6 py-4 bg-gray-50 flex justify-end gap-3">
-                                <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-gray-600 bg-white border border-gray-200 rounded-xl hover:bg-gray-100 transition-colors">
+                            
+                            {/* Footer Modal */}
+                            <div className="px-6 py-4 bg-gray-50/30 flex justify-end gap-3 border-t border-yellow-50">
+                                <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold text-slate-500 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
                                     Batal
                                 </button>
-                                <button type="submit" disabled={isLoading} className="px-5 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-500/20 disabled:opacity-70 flex items-center gap-2 transition-all">
-                                    {isLoading ? 'Memproses...' : (
+                                <button type="submit" disabled={isLoading} className="px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl hover:shadow-[0_4px_15px_rgba(250,204,21,0.4)] hover:scale-[1.02] disabled:opacity-70 flex items-center gap-2 transition-all shadow-md">
+                                    {isLoading ? 'Menyimpan...' : (
                                         <>
-                                            <span>Lanjut</span>
+                                            <span>Simpan Perubahan</span>
                                             <Save size={16} />
                                         </>
                                     )}
@@ -109,8 +115,8 @@ const ProfileUser = () => {
     }, [user]);
 
     if (!user) return (
-        <div className="flex justify-center items-center min-h-[60vh]">
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+        <div className="flex justify-center items-center min-h-[60vh] bg-[#FDFDF9]">
+             <div className="animate-spin rounded-full h-12 w-12 border-4 border-yellow-200 border-t-yellow-500"></div>
         </div>
     );
 
@@ -291,130 +297,138 @@ const ProfileUser = () => {
     };
 
     const RenderProfileItem = ({ icon: Icon, label, value, fieldKey }: { icon: any, label: string, value: string | null | undefined, fieldKey: string }) => (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between py-5 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 px-2 -mx-2 rounded-lg transition-colors group">
-            <div className="flex items-center gap-4 mb-2 sm:mb-0">
-                <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl group-hover:scale-105 transition-transform duration-300">
-                    <Icon size={18} />
+        <motion.div 
+            whileHover={{ scale: 1.01 }}
+            className="flex flex-col sm:flex-row sm:items-center justify-between p-4 mb-3 border border-yellow-100/50 bg-white rounded-2xl shadow-sm hover:shadow-[0_4px_20px_-5px_rgba(250,204,21,0.15)] transition-all group"
+        >
+            <div className="flex items-center gap-4 mb-3 sm:mb-0">
+                <div className="p-3 bg-yellow-50 text-yellow-600 rounded-xl group-hover:bg-yellow-100 transition-colors duration-300">
+                    <Icon size={20} />
                 </div>
                 <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">{label}</p>
-                    <p className="text-base font-semibold text-gray-800 break-all">{value || '-'}</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">{label}</p>
+                    <p className="text-sm font-bold text-slate-800 break-all">{value || <span className="text-slate-300 italic">Kosong</span>}</p>
                 </div>
             </div>
             <button 
                 onClick={() => openModal(fieldKey)}
-                className="self-start sm:self-center px-4 py-2 text-sm font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-all active:scale-95 flex items-center gap-2"
+                className="self-start sm:self-center px-4 py-2 text-xs font-bold text-yellow-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-all active:scale-95 flex items-center gap-2 border border-yellow-100"
             >
                 <span>Ubah</span>
-                <Edit2 size={14} />
+                <Edit2 size={12} />
             </button>
-        </div>
+        </motion.div>
     );
 
     return (
-        <div className="max-w-10xl mx-auto px-6 sm:px-6 lg:px-10 py-8 font-sans">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans pb-24">
             <Notification {...notif} onClose={closeNotif} />
-
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-800">Pengaturan Akun</h1>
-                <p className="text-gray-500 text-sm mt-1">Kelola detail profil dan preferensi keamanan Anda.</p>
+            <div className="mb-10 text-center">
+                <h1 className="text-3xl font-black text-slate-800 mb-2">Profil Saya</h1>
+                <p className="text-slate-500 text-sm">Kelola informasi pribadi dan keamanan akun Anda</p>
             </div>
 
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-                <div className="p-6 md:p-8 bg-gradient-to-r from-blue-50 via-indigo-50 to-white flex flex-col md:flex-row items-center gap-6 md:gap-8 border-b border-gray-100">
-                    <div className="relative group shrink-0">
-                        <div className="relative inline-block">
-                            <img 
-                                className="h-28 w-28 md:h-32 md:w-32 rounded-full object-cover border-[6px] border-white shadow-xl" 
-                                src={avatarPreview || `https://ui-avatars.com/api/?name=${user.name}&background=random`} 
-                                alt="Profile" 
-                            />
-                            <label className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-all cursor-pointer z-10 backdrop-blur-[2px]">
-                                <Camera className="text-white mb-1" size={24} />
-                                <span className="text-white text-[10px] font-bold uppercase tracking-widest">Ubah</span>
-                                <input type="file" className="hidden" onChange={handleAvatarChange} accept="image/png, image/jpeg, image/jpg" />
-                            </label>
-                            
-                            <div className="absolute bottom-2 right-2 w-5 h-5 bg-green-500 border-4 border-white rounded-full z-20"></div>
-                        </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="lg:col-span-4 space-y-6">
+                    <div className="bg-white rounded-[2.5rem] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.05)] border border-yellow-100 p-8 text-center relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-br from-yellow-50 via-amber-50 to-white opacity-80"></div>
                         
-                        {user.avatar && (
-                            <motion.button 
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                onClick={handlePreDeleteAvatar}
-                                disabled={isLoading}
-                                className="absolute -bottom-2 -right-2 bg-white text-red-500 p-2.5 rounded-full shadow-lg border border-gray-100 hover:bg-red-50 transition-colors z-30"
-                                title="Hapus foto"
-                            >
-                                <Trash2 size={16} />
-                            </motion.button>
-                        )}
-                    </div>
-                    
-                    <div className="text-center md:text-left flex-1 min-w-0">
-                        <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 truncate">{user.name}</h2>
-                            <CheckCircle2 size={24} className="text-blue-500 shrink-0" fill="#DBEAFE" />
-                        </div>
-                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                            <span className="bg-blue-600 text-white text-xs px-3 py-1 rounded-full uppercase font-bold tracking-wide shadow-blue-200 shadow-md">
-                                {user.role}
-                            </span>
-                            <span className="text-gray-500 text-sm font-medium flex items-center gap-1 bg-gray-50 px-3 py-1 rounded-full border border-gray-200">
-                                <Mail size={14} /> {user.email}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 h-fit">
-                    <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2 pb-2 border-b border-gray-100">
-                        <User className="text-blue-500" size={20} />
-                        Informasi Pribadi
-                    </h3>
-                    <div className="space-y-1">
-                        <RenderProfileItem icon={User} label="Nama Lengkap" value={user.name} fieldKey="name" />
-                        <RenderProfileItem icon={ShieldCheck} label="Username" value={user.username} fieldKey="username" />
-                        <RenderProfileItem icon={Mail} label="Alamat Email" value={user.email} fieldKey="email" />
-                        <RenderProfileItem icon={Phone} label="Nomor Telepon" value={user.phone_number} fieldKey="phone_number" />
-                    </div>
-                </div>
-
-                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 h-fit">
-                    <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2 pb-2 border-b border-gray-100">
-                        <Lock className="text-blue-500" size={20} />
-                        Keamanan Akun
-                    </h3>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between py-6 px-2 -mx-2 rounded-lg hover:bg-gray-50/50 transition-colors group">
-                        <div className="flex items-center gap-4 mb-3 sm:mb-0">
-                            <div className="p-2.5 bg-red-50 text-red-500 rounded-xl group-hover:scale-105 transition-transform duration-300">
-                                <Lock size={20} />
+                        <div className="relative z-10">
+                            <div className="relative inline-block mb-4 group">
+                                <div className="p-1.5 bg-white rounded-full shadow-md">
+                                    <img 
+                                        className="h-32 w-32 rounded-full object-cover border-4 border-yellow-100" 
+                                        src={avatarPreview || `https://ui-avatars.com/api/?name=${user.name}&background=F59E0B&color=fff`} 
+                                        alt="Profile" 
+                                    />
+                                </div>
+                                <label className="absolute bottom-2 right-2 p-2.5 bg-yellow-400 text-white rounded-full shadow-lg cursor-pointer hover:bg-yellow-500 hover:scale-110 transition-all border-4 border-white">
+                                    <Camera size={16} />
+                                    <input type="file" className="hidden" onChange={handleAvatarChange} accept="image/png, image/jpeg, image/jpg" />
+                                </label>
                             </div>
-                            <div>
-                                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-0.5">Password</p>
-                                <p className="text-base font-semibold text-gray-900 flex items-center gap-1">
-                                    <span>••••••••••••••••</span>
-                                </p>
+
+                            <h2 className="text-xl font-black text-slate-800 mb-1">{user.name}</h2>
+                            <p className="text-slate-400 text-sm font-medium mb-4">@{user.username || 'username'}</p>
+                            
+                            <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
+                                <span className="bg-yellow-100 text-yellow-700 text-[10px] px-3 py-1.5 rounded-full uppercase font-bold tracking-wider shadow-sm border border-yellow-200">
+                                    {user.role}
+                                </span>
+                                <span className="bg-slate-50 text-slate-500 text-[10px] px-3 py-1.5 rounded-full font-bold border border-slate-100 flex items-center gap-1">
+                                    <Sparkles size={10} className="text-yellow-500"/> Active
+                                </span>
                             </div>
+
+                            {user.avatar && (
+                                <button 
+                                    onClick={handlePreDeleteAvatar}
+                                    className="text-xs font-bold text-red-400 hover:text-red-500 flex items-center justify-center gap-2 w-full py-2 hover:bg-red-50 rounded-xl transition-colors"
+                                >
+                                    <Trash2 size={14} /> Hapus Foto
+                                </button>
+                            )}
                         </div>
-                        <button 
-                            onClick={() => openModal('password')}
-                            className="self-start sm:self-center px-4 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md shadow-blue-500/20 transition-all active:scale-95 flex items-center gap-2"
-                        >
-                            <span>Ganti Password</span>
-                            <ShieldCheck size={16} />
-                        </button>
                     </div>
-                    
-                    <div className="mt-8 p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                        <h4 className="font-bold text-blue-800 text-sm mb-1">Tips Keamanan</h4>
-                        <p className="text-blue-600 text-xs leading-relaxed">
-                            Gunakan password yang kuat dengan kombinasi huruf, angka, dan simbol. Jangan pernah membagikan password Anda kepada siapa pun.
+
+                    <div className="bg-gradient-to-br from-yellow-400 to-amber-500 rounded-3xl p-6 text-white shadow-lg shadow-yellow-500/20 relative overflow-hidden">
+                        <ShieldCheck size={100} className="absolute -bottom-5 -right-5 text-white/20" />
+                        <h4 className="font-bold text-lg mb-2 relative z-10">Keamanan Akun</h4>
+                        <p className="text-yellow-50 text-xs leading-relaxed relative z-10 mb-4">
+                            Ganti password secara berkala untuk menjaga akun Anda tetap aman dari akses yang tidak sah.
                         </p>
                     </div>
+                </div>
+
+                <div className="lg:col-span-8 space-y-8">
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 px-2">
+                            <span className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                                <User size={16} />
+                            </span>
+                            Informasi Pribadi
+                        </h3>
+                        <div className="bg-white rounded-[2rem] shadow-[0_4px_30px_rgba(0,0,0,0.02)] border border-slate-100 p-6 space-y-1">
+                            <RenderProfileItem icon={User} label="Nama Lengkap" value={user.name} fieldKey="name" />
+                            <RenderProfileItem icon={Sparkles} label="Username" value={user.username} fieldKey="username" />
+                            <RenderProfileItem icon={Mail} label="Alamat Email" value={user.email} fieldKey="email" />
+                            <RenderProfileItem icon={Phone} label="Nomor Telepon" value={user.phone_number} fieldKey="phone_number" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2 px-2">
+                            <span className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                                <Key size={16} />
+                            </span>
+                            Password & Keamanan
+                        </h3>
+                        <div className="bg-white rounded-[2rem] shadow-[0_4px_30px_rgba(0,0,0,0.02)] border border-slate-100 p-6">
+                             <div className="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-gradient-to-r from-slate-50 to-white border border-slate-100 rounded-2xl group hover:border-yellow-200 transition-colors">
+                                <div className="flex items-center gap-4 mb-3 sm:mb-0">
+                                    <div className="p-3 bg-white border border-slate-100 text-slate-400 rounded-xl shadow-sm">
+                                        <Lock size={20} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Password</p>
+                                        <div className="flex gap-1 mt-1">
+                                            {[...Array(8)].map((_, i) => (
+                                                <div key={i} className="w-2 h-2 rounded-full bg-slate-300"></div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                                <button 
+                                    onClick={() => openModal('password')}
+                                    className="px-5 py-2.5 text-sm font-bold text-white bg-slate-800 hover:bg-slate-900 rounded-xl shadow-lg shadow-slate-200 transition-all active:scale-95 flex items-center gap-2"
+                                >
+                                    <ShieldCheck size={16} />
+                                    <span>Ganti Password</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -425,16 +439,16 @@ const ProfileUser = () => {
                 onSubmit={handleSaveWithState}
                 isLoading={isLoading}
             >
-                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4">
-                    <label className="block text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">
+                <div className="bg-yellow-50/50 p-4 rounded-2xl border border-yellow-100 mb-6">
+                    <label className="block text-[10px] font-bold text-yellow-600 uppercase tracking-widest mb-1">
                         Data Saat Ini
                     </label>
-                    <div className="text-sm font-semibold text-gray-700 break-all">
-                        {tempData.oldValue || <span className="text-gray-400 italic">Belum diatur</span>}
+                    <div className="text-sm font-bold text-slate-700 break-all">
+                        {tempData.oldValue || <span className="text-slate-400 italic">Belum diatur</span>}
                     </div>
                 </div>
                 <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2 capitalize">
+                    <label className="block text-sm font-bold text-slate-700 mb-2 capitalize">
                         Masukkan Data Baru
                     </label>
                     <div className="relative">
@@ -442,14 +456,14 @@ const ProfileUser = () => {
                             type={activeModal === 'email' ? 'email' : 'text'}
                             value={tempData.value}
                             onChange={(e) => setTempData({ ...tempData, value: e.target.value })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none font-medium"
-                            placeholder={`Ketik data baru disini...`}
+                            className="w-full px-5 py-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-yellow-100 focus:border-yellow-400 transition-all outline-none font-bold text-slate-800 placeholder:text-slate-300 placeholder:font-normal bg-white"
+                            placeholder={`Ketik ${activeModal} baru...`}
                             autoFocus
                         />
                         {errors && errors[activeModal || ''] && (
                             <motion.p 
                                 initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }}
-                                className="text-red-500 text-xs mt-2 font-medium flex items-center gap-1"
+                                className="text-red-500 text-xs mt-2 font-bold flex items-center gap-1"
                             >
                                 <X size={12} /> {errors[activeModal || ''][0]}
                             </motion.p>
@@ -465,28 +479,46 @@ const ProfileUser = () => {
                 onSubmit={handleSaveWithState}
                 isLoading={isLoading}
             >
-                <div className="space-y-4">
+                <div className="space-y-5">
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Password Saat Ini</label>
+                        <label className="block text-sm font-bold text-slate-700 mb-1.5">Password Saat Ini</label>
                         <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                            <input type="password" value={tempData.current_password} onChange={(e) => setTempData({ ...tempData, current_password: e.target.value })} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none" placeholder="••••••••" />
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <input 
+                                type="password" 
+                                value={tempData.current_password} 
+                                onChange={(e) => setTempData({ ...tempData, current_password: e.target.value })} 
+                                className="w-full pl-11 pr-4 py-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-yellow-100 focus:border-yellow-400 transition-all outline-none font-medium" 
+                                placeholder="••••••••" 
+                            />
                         </div>
-                        {errors?.current_password && <p className="text-red-500 text-xs mt-1 font-medium">{errors.current_password[0]}</p>}
+                        {errors?.current_password && <p className="text-red-500 text-xs mt-1 font-bold">{errors.current_password[0]}</p>}
                     </div>
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Password Baru</label>
+                        <label className="block text-sm font-bold text-slate-700 mb-1.5">Password Baru</label>
                         <div className="relative">
-                            <ShieldCheck className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                            <input type="password" value={tempData.new_password} onChange={(e) => setTempData({ ...tempData, new_password: e.target.value })} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none" placeholder="Min 8 karakter" />
+                            <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <input 
+                                type="password" 
+                                value={tempData.new_password} 
+                                onChange={(e) => setTempData({ ...tempData, new_password: e.target.value })} 
+                                className="w-full pl-11 pr-4 py-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-yellow-100 focus:border-yellow-400 transition-all outline-none font-medium" 
+                                placeholder="Min 8 karakter" 
+                            />
                         </div>
-                        {errors?.password && <p className="text-red-500 text-xs mt-1 font-medium">{errors.password[0]}</p>}
+                        {errors?.password && <p className="text-red-500 text-xs mt-1 font-bold">{errors.password[0]}</p>}
                     </div>
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1.5">Konfirmasi Password</label>
+                        <label className="block text-sm font-bold text-slate-700 mb-1.5">Konfirmasi Password</label>
                         <div className="relative">
-                            <CheckCircle2 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                            <input type="password" value={tempData.password_confirmation} onChange={(e) => setTempData({ ...tempData, password_confirmation: e.target.value })} className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none" placeholder="Ulangi password baru" />
+                            <CheckCircle2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                            <input 
+                                type="password" 
+                                value={tempData.password_confirmation} 
+                                onChange={(e) => setTempData({ ...tempData, password_confirmation: e.target.value })} 
+                                className="w-full pl-11 pr-4 py-3.5 border border-slate-200 rounded-xl focus:ring-4 focus:ring-yellow-100 focus:border-yellow-400 transition-all outline-none font-medium" 
+                                placeholder="Ulangi password baru" 
+                            />
                         </div>
                     </div>
                 </div>

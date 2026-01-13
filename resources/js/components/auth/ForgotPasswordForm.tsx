@@ -45,10 +45,10 @@ export default function ForgotPasswordForm() {
             setNotif({
                 isOpen: true,
                 type: 'success',
-                title: 'Akun Ditemukan',
-                message: 'Kode verifikasi berhasil dikirim ke email Anda. Silakan cek inbox atau spam.',
+                title: 'Email Terkirim!',
+                message: 'Kode verifikasi telah dikirim ke email Anda. Silakan cek inbox atau folder spam.',
                 singleButton: true,
-                confirmText: 'Oke',
+                confirmText: 'Lanjut Verifikasi',
                 onConfirm: () => {
                     closeNotif();
                     navigate('/verification', { 
@@ -68,7 +68,7 @@ export default function ForgotPasswordForm() {
             if (error.response) {
                 if (error.response.status === 404 || error.response.data?.errors?.email) {
                     errorTitle = "Akun Tidak Ditemukan";
-                    errorMessage = "Username atau Email yang Anda masukkan tidak terdaftar di sistem kami.";
+                    errorMessage = "Email yang Anda masukkan belum terdaftar di Padel Arena.";
                 } else {
                     errorMessage = error.response.data.message || errorMessage;
                 }
@@ -114,17 +114,17 @@ export default function ForgotPasswordForm() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="nama@email.com"
-                    icon={<Mail size={18} />}
+                    icon={<Mail size={20} />} 
                     required
                     autoFocus
                 />
 
                 <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
+                    whileHover={{ scale: 1.02, boxShadow: "0 10px 25px -5px rgba(234, 179, 8, 0.4)" }}
+                    whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/30 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-2"
+                    className="w-full bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-yellow-500/30 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-2 text-sm tracking-wide uppercase"
                 >
                     {isSubmitting ? (
                         <>

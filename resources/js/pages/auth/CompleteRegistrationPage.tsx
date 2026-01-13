@@ -18,8 +18,8 @@ export default function CompleteRegistrationPage() {
             className="w-full"
         >
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-800">Finalisasi Akun</h2>
-                <p className="text-gray-500 text-sm mt-1">Lengkapi informasi di bawah ini</p>
+                <h2 className="text-3xl font-black text-slate-800 tracking-tight">Finalisasi Akun</h2>
+                <p className="text-slate-500 text-sm font-medium mt-1">Lengkapi sedikit lagi informasi Anda untuk Padel Arena.</p>
             </div>
 
             <CompleteRegistrationForm 

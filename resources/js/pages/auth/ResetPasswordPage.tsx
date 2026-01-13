@@ -6,24 +6,24 @@ export default function ResetPasswordPage() {
     return (
         <div>
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-gray-800">Reset Password</h2>
-                <p className="text-gray-500 text-sm mt-2">
-                    Silakan buat password baru untuk akun Anda.
+                <h2 className="text-3xl font-black text-slate-800 tracking-tight">Reset Password</h2>
+                <p className="text-slate-500 text-sm font-medium mt-2 leading-relaxed">
+                    Silakan buat password baru untuk mengamankan akun Padel Arena Anda.
                 </p>
             </div>
 
             <ResetPasswordForm />
 
-            <div className="mt-8 flex items-center justify-center gap-2 text-sm text-gray-500">
+            <div className="mt-8 flex items-center justify-center gap-2 text-sm text-slate-500 font-medium">
                 <span>Tidak jadi reset?</span>
                 
                 <Link
                     to="/dashboard"
-                    className="font-bold text-blue-600 relative group transition-colors hover:text-blue-700 flex items-center gap-1"
+                    className="font-bold text-yellow-600 relative group transition-colors hover:text-yellow-700 flex items-center gap-1"
                 >
                     <LayoutDashboard size={16} className="group-hover:-translate-x-1 transition-transform duration-300" />
-                    <span>Masuk ke Dashboard</span>
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
+                    <span className="relative z-10">Masuk ke Dashboard</span>
+                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-yellow-500 transition-all duration-300 group-hover:w-full"></span>
                 </Link>
             </div>
         </div>

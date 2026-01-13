@@ -25,7 +25,7 @@ export default function ProfileDropdownUser() {
 
     const avatarUrl = user.avatar 
         ? `/storage/${user.avatar}?t=${new Date().getTime()}`
-        : `https://ui-avatars.com/api/?name=${user.name}&background=random`;
+        : `https://ui-avatars.com/api/?name=${user.name}&background=F59E0B&color=fff`; 
 
     const handleLogoutClick = () => {
         setIsOpen(false);
@@ -56,20 +56,24 @@ export default function ProfileDropdownUser() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsOpen(!isOpen)} 
-                    className={`flex items-center gap-3 p-1.5 sm:p-2 pr-3 rounded-full transition-all duration-200 border ${isOpen ? 'bg-blue-50 border-blue-200 ring-2 ring-blue-100' : 'bg-white border-slate-200 hover:border-blue-200 hover:shadow-md'}`}
+                    className={`flex items-center gap-3 p-1.5 sm:p-2 pr-3 rounded-2xl transition-all duration-300 border-2 ${
+                        isOpen 
+                        ? 'bg-yellow-50 border-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.3)]' 
+                        : 'bg-white border-transparent hover:border-yellow-200 hover:bg-yellow-50/50'
+                    }`}
                 >
                     <div className="relative shrink-0">
                         <img 
                             src={avatarUrl} 
                             alt={user.name} 
-                            className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white shadow-sm"
+                            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl object-cover transition-all duration-300 ${isOpen ? 'ring-2 ring-yellow-400 ring-offset-2' : ''}`}
                         />
-                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
+                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-yellow-500 border-2 border-white rounded-full"></div>
                     </div>
                     
                     <div className="text-left hidden sm:block max-w-[140px]">
-                        <p className="text-sm font-bold text-slate-700 leading-tight truncate">{user.name}</p>
-                        <p className="text-[11px] font-medium text-slate-500 truncate flex items-center gap-1 mt-0.5">
+                        <p className="text-sm font-bold text-slate-800 leading-tight truncate">{user.name}</p>
+                        <p className="text-[11px] font-medium text-slate-400 truncate flex items-center gap-1 mt-0.5 group-hover:text-yellow-600 transition-colors">
                             {user.email}
                         </p>
                     </div>
@@ -77,34 +81,35 @@ export default function ProfileDropdownUser() {
                     <motion.div
                         animate={{ rotate: isOpen ? 180 : 0 }}
                         transition={{ duration: 0.2 }}
-                        className="text-slate-400 ml-1 hidden sm:block"
+                        className={`ml-1 hidden sm:block ${isOpen ? 'text-yellow-500' : 'text-slate-300'}`}
                     >
-                        <ChevronDown size={16} />
+                        <ChevronDown size={18} strokeWidth={2.5} />
                     </motion.div>
                 </motion.button>
 
                 <AnimatePresence>
                     {isOpen && (
                         <motion.div 
-                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            transition={{ duration: 0.2, type: "spring", stiffness: 300, damping: 25 }}
-                            className="absolute right-0 mt-3 w-72 bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-100 py-2 z-50 overflow-hidden"
+                            initial={{ opacity: 0, y: 15, scale: 0.95, filter: 'blur(10px)' }}
+                            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, y: 15, scale: 0.95, filter: 'blur(10px)' }}
+                            transition={{ duration: 0.25, type: "spring", stiffness: 350, damping: 25 }}
+                            className="absolute right-0 mt-4 w-72 bg-white rounded-3xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-yellow-100 py-2 z-50 overflow-hidden"
                         >
-                            <div className="px-5 py-4 border-b border-slate-50 bg-slate-50/50 flex items-center gap-3">
+                            {/* Header Gradient Kuning */}
+                            <div className="px-5 py-5 border-b border-yellow-100 bg-gradient-to-br from-yellow-50 via-amber-50/50 to-white flex items-center gap-4">
                                 <img 
                                     src={avatarUrl} 
                                     alt={user.name} 
-                                    className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md"
+                                    className="w-12 h-12 rounded-2xl object-cover shadow-sm ring-2 ring-white"
                                 />
                                 <div className="overflow-hidden">
-                                    <p className="text-sm font-bold text-slate-800 truncate">{user.name}</p>
-                                    <p className="text-xs text-slate-500 truncate flex items-center gap-1">
-                                        <Mail size={10} />
+                                    <p className="text-sm font-black text-slate-800 truncate tracking-tight">{user.name}</p>
+                                    <p className="text-xs text-slate-500 truncate flex items-center gap-1 mb-1.5">
+                                        <Mail size={10} className="text-yellow-500" />
                                         {user.email}
                                     </p>
-                                    <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                                    <span className="inline-block px-2.5 py-0.5 bg-yellow-400 text-yellow-950 text-[10px] font-bold rounded-md uppercase tracking-wider shadow-sm">
                                         {user.role}
                                     </span>
                                 </div>
@@ -113,36 +118,36 @@ export default function ProfileDropdownUser() {
                             <div className="p-2 space-y-1">
                                 <Link 
                                     to="/dashboard" 
-                                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition-colors group"
+                                    className="flex items-center gap-3 px-3 py-3 text-sm font-bold text-slate-600 rounded-2xl hover:bg-yellow-50 hover:text-yellow-700 transition-all group"
                                     onClick={() => setIsOpen(false)}
                                 >
-                                    <div className="p-2 bg-slate-100 rounded-lg group-hover:bg-blue-100 text-slate-500 group-hover:text-blue-600 transition-colors">
-                                        <LayoutDashboard size={18} />
+                                    <div className="p-2 bg-slate-50 rounded-xl group-hover:bg-yellow-200 group-hover:text-yellow-800 text-slate-400 transition-colors shadow-sm">
+                                        <LayoutDashboard size={18} strokeWidth={2.5} />
                                     </div>
                                     Dashboard
                                 </Link>
                                 
                                 <Link 
                                     to="/profile" 
-                                    className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-600 rounded-xl hover:bg-blue-50 hover:text-blue-600 transition-colors group"
+                                    className="flex items-center gap-3 px-3 py-3 text-sm font-bold text-slate-600 rounded-2xl hover:bg-yellow-50 hover:text-yellow-700 transition-all group"
                                     onClick={() => setIsOpen(false)}
                                 >
-                                    <div className="p-2 bg-slate-100 rounded-lg group-hover:bg-blue-100 text-slate-500 group-hover:text-blue-600 transition-colors">
-                                        <Settings size={18} />
+                                    <div className="p-2 bg-slate-50 rounded-xl group-hover:bg-yellow-200 group-hover:text-yellow-800 text-slate-400 transition-colors shadow-sm">
+                                        <Settings size={18} strokeWidth={2.5} />
                                     </div>
                                     Pengaturan Akun
                                 </Link>
                             </div>
                             
-                            <div className="border-t border-slate-100 my-1 mx-2"></div>
+                            <div className="border-t border-dashed border-slate-200 mx-4 my-1"></div>
 
                             <div className="p-2">
                                 <button 
                                     onClick={handleLogoutClick}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-red-600 rounded-xl hover:bg-red-50 transition-colors text-left group"
+                                    className="w-full flex items-center gap-3 px-3 py-3 text-sm font-bold text-red-500 rounded-2xl hover:bg-red-50 hover:text-red-600 transition-colors text-left group"
                                 >
-                                    <div className="p-2 bg-red-50 rounded-lg group-hover:bg-red-100 text-red-500 group-hover:text-red-600 transition-colors">
-                                        <LogOut size={18} />
+                                    <div className="p-2 bg-red-50 rounded-xl group-hover:bg-red-100 text-red-400 group-hover:text-red-500 transition-colors">
+                                        <LogOut size={18} strokeWidth={2.5} />
                                     </div>
                                     Keluar
                                 </button>
