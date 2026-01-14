@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users, Settings, LogOut, Menu, X, MessageSquareWarning, Building } from 'lucide-react';
+import { LayoutDashboard, Users, Settings, LogOut, Menu, X, Map } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ProfiledropdownAdmin from '../components/ux/ProfileDropdownAdmin';
 
@@ -19,8 +19,7 @@ export default function AdminLayout() {
     const menus = [
         { name: 'Dashboard', path: '/admin/dashboard', icon: <LayoutDashboard size={20} /> },
         { name: 'Manajemen Pengguna', path: '/admin/users', icon: <Users size={20} /> },
-        { name: 'Manajemen Kantor', path: '/admin/offices', icon: <Building size={20} /> },
-        { name: 'Keluhan Pelanggan', path: '/admin/customer-service', icon: <MessageSquareWarning size={20} /> },
+        { name: 'Manajemen Lapangan', path: '/admin/padel-courts', icon: <Map size={20} /> },
         { name: 'Pengaturan', path: '/admin/settings', icon: <Settings size={20} /> },
     ];
 
