@@ -14,6 +14,7 @@ Route::middleware('guest')->group(function () {
     Route::post('login', [AuthenticatedSessionController::class, 'store']);
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
     Route::post('verify-code', [VerificationController::class, 'verify']);
+    Route::post('resend-code', [VerificationController::class, 'resend']);
     Route::get('auth/google/redirect', [SocialAuthController::class, 'redirect']);
     Route::get('auth/google/callback', [SocialAuthController::class, 'callback']);
     Route::post('complete-registration', [SocialAuthController::class, 'completeRegistration']);

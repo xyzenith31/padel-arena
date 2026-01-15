@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Input from '../../components/ui/Input';
 import Notification, { NotificationType } from '../../components/ui/Notification';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, Calendar, Lock, AtSign, Loader2, ArrowRight } from 'lucide-react';
+import { User, Mail, Phone, Lock, Loader2, ArrowRight } from 'lucide-react';
 
 interface NotificationState {
     isOpen: boolean;
@@ -21,13 +21,10 @@ export default function RegisterForm() {
     const { register } = useAuth();
     const navigate = useNavigate();
     const [processing, setProcessing] = useState(false);
-    
     const [data, setData] = useState({
         name: '',
-        username: '',
         email: '',
         phone_number: '',
-        date_of_birth: '',
         password: '',
         password_confirmation: ''
     });
@@ -141,9 +138,6 @@ export default function RegisterForm() {
                 if (errs.email) {
                     errorTitle = "Email Sudah Digunakan";
                     errorMessage = "Alamat email ini sudah terdaftar di sistem. Silakan gunakan email lain atau coba login.";
-                } else if (errs.username) {
-                    errorTitle = "Username Sudah Digunakan";
-                    errorMessage = "Username ini sudah dipakai pengguna lain. Silakan pilih username yang unik.";
                 } else if (errs.phone_number) {
                     errorTitle = "Nomor Ponsel Terdaftar";
                     errorMessage = "Nomor ponsel ini sudah terhubung dengan akun lain. Gunakan nomor yang berbeda.";
@@ -192,19 +186,9 @@ export default function RegisterForm() {
                     label="Nama Lengkap"
                     name="name" 
                     value={data.name} 
-                    placeholder="Hasbullah Rangkuti" 
+                    placeholder="Nama Lengkap Anda" 
                     onChange={handleChange} 
                     icon={<User size={20} />}
-                    required 
-                />
-                
-                <Input 
-                    label="Username"
-                    name="username" 
-                    value={data.username} 
-                    placeholder="Contoh: hasbullahrangkuti" 
-                    onChange={handleChange} 
-                    icon={<AtSign size={20} />}
                     required 
                 />
                 
@@ -213,7 +197,7 @@ export default function RegisterForm() {
                     type="email" 
                     name="email" 
                     value={data.email} 
-                    placeholder="hasbullahrangkuti@email.com" 
+                    placeholder="nama@email.com" 
                     onChange={handleChange} 
                     icon={<Mail size={20} />}
                     required 
@@ -226,16 +210,6 @@ export default function RegisterForm() {
                     placeholder="0812xxxx" 
                     onChange={handleChange} 
                     icon={<Phone size={20} />}
-                    required 
-                />
-                
-                <Input 
-                    label="Tanggal Lahir"
-                    type="date" 
-                    name="date_of_birth" 
-                    value={data.date_of_birth} 
-                    onChange={handleChange} 
-                    icon={<Calendar size={20} />}
                     required 
                 />
                 

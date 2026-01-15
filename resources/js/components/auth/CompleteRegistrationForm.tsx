@@ -1,7 +1,8 @@
 import { useState, FormEventHandler } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Calendar, Lock, CheckCircle, Loader2, ShieldCheck, ArrowRight } from 'lucide-react';
+import { User, Phone, Lock, CheckCircle, Loader2, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 import Input from '../ui/Input';
 import Notification, { NotificationType } from '../ui/Notification';
@@ -24,13 +25,12 @@ interface NotificationState {
 
 const CompleteRegistrationForm = ({ defaultName, defaultEmail, googleId }: CompleteRegistrationFormProps) => {
     const { completeRegistration, errors, isLoading } = useAuth();
-    
+    const navigate = useNavigate();
     const [data, setData] = useState({
-        name: defaultName,
+        name: defaultName || '',
         email: defaultEmail,
         google_id: googleId,
-        username: '',
-        date_of_birth: '',
+        phone_number: '',
         password: '',
         password_confirmation: '',
     });
@@ -56,13 +56,14 @@ const CompleteRegistrationForm = ({ defaultName, defaultEmail, googleId }: Compl
         setShowConfirmModal(false);
         try {
             await completeRegistration(data);
-            window.location.href = 'http://localhost:8000/dashboard';
-        } catch (error) {
+            navigate('/dashboard'); 
+        } catch (error: any) {
+            console.error(error);
             setNotif({
                 isOpen: true,
                 type: 'error',
-                title: 'Gagal',
-                message: 'Terjadi kesalahan sistem saat menyimpan data.',
+                title: 'Gagal Menyimpan',
+                message: error.response?.data?.message || 'Terjadi kesalahan sistem saat menyimpan data.',
                 singleButton: true,
                 confirmText: 'Coba Lagi',
                 onConfirm: closeNotif
@@ -73,6 +74,7 @@ const CompleteRegistrationForm = ({ defaultName, defaultEmail, googleId }: Compl
     return (
         <>
             <Notification {...notif} onClose={closeNotif} />
+
             <div className="mb-8 flex items-center gap-4 p-4 bg-yellow-50/60 rounded-2xl border border-yellow-100 shadow-sm">
                 <div className="flex-shrink-0 bg-white p-2.5 rounded-xl shadow-sm border border-yellow-50">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -90,32 +92,36 @@ const CompleteRegistrationForm = ({ defaultName, defaultEmail, googleId }: Compl
 
             <form onSubmit={handlePreSubmit} className="space-y-5">
                 <Input
-                    label="Buat Username"
+                    label="Nama Lengkap"
                     type="text"
-                    placeholder="Contoh: hasbullahrangkuti"
-                    value={data.username}
-                    onChange={(e) => setData({ ...data, username: e.target.value })}
+                    placeholder="Nama Lengkap Anda"
+                    value={data.name}
+                    onChange={(e) => setData({ ...data, name: e.target.value })}
                     icon={<User size={20} />} 
-                    error={errors?.username?.[0]}
+                    error={errors?.name?.[0]}
+                    required
                 />
 
                 <Input
-                    label="Tanggal Lahir"
-                    type="date"
-                    value={data.date_of_birth}
-                    onChange={(e) => setData({ ...data, date_of_birth: e.target.value })}
-                    icon={<Calendar size={20} />}
-                    error={errors?.date_of_birth?.[0]}
+                    label="Nomor Ponsel"
+                    type="tel"
+                    placeholder="Contoh: 081234567890"
+                    value={data.phone_number}
+                    onChange={(e) => setData({ ...data, phone_number: e.target.value })}
+                    icon={<Phone size={20} />}
+                    error={errors?.phone_number?.[0]}
+                    required
                 />
 
                 <Input
-                    label="Buat Password"
+                    label="Buat Password Baru"
                     type="password"
                     placeholder="Min 8 karakter"
                     value={data.password}
                     onChange={(e) => setData({ ...data, password: e.target.value })}
                     icon={<Lock size={20} />}
                     error={errors?.password?.[0]}
+                    required
                 />
 
                 <Input
@@ -125,6 +131,7 @@ const CompleteRegistrationForm = ({ defaultName, defaultEmail, googleId }: Compl
                     value={data.password_confirmation}
                     onChange={(e) => setData({ ...data, password_confirmation: e.target.value })}
                     icon={<ShieldCheck size={20} />}
+                    required
                 />
 
                 <motion.button
@@ -132,7 +139,7 @@ const CompleteRegistrationForm = ({ defaultName, defaultEmail, googleId }: Compl
                     whileTap={{ scale: 0.98 }}
                     type="submit"
                     disabled={isLoading}
-                    className="w-full mt-2 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-yellow-500/30 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-2 text-sm tracking-wide uppercase"
+                    className="w-full mt-4 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-yellow-500/30 disabled:opacity-70 disabled:cursor-not-allowed transition-all flex justify-center items-center gap-2 text-sm tracking-wide uppercase"
                 >
                     {isLoading ? (
                         <Loader2 className="animate-spin" size={20} /> 
@@ -157,7 +164,7 @@ const CompleteRegistrationForm = ({ defaultName, defaultEmail, googleId }: Compl
                                     <CheckCircle size={32} strokeWidth={2.5} />
                                 </div>
                                 <h3 className="text-xl font-black text-slate-800 tracking-tight">Sudah Benar?</h3>
-                                <p className="text-sm font-medium text-slate-500 mt-2 leading-relaxed">Pastikan data Anda sudah sesuai sebelum melanjutkan ke dashboard.</p>
+                                <p className="text-sm font-medium text-slate-500 mt-2 leading-relaxed">Pastikan nomor ponsel dan nama Anda sudah sesuai.</p>
                             </div>
                             <div className="flex gap-3">
                                 <button 

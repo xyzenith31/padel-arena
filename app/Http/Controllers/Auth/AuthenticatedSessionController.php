@@ -22,9 +22,9 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate(); 
 
         $user = $request->user(); 
+        
         if (!$user) {
-            $inputType = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-            $user = User::where($inputType, $request->input('login'))->first();
+            $user = User::where('email', $request->input('email'))->first();
         }
         
         Auth::guard('web')->logout(); 
@@ -45,7 +45,8 @@ class AuthenticatedSessionController extends Controller
         return response()->json([
             'message' => 'Kredensial valid. Silakan verifikasi kode.',
             'require_verification' => true,
-            'email' => $user->email
+            'email' => $user->email,
+            'role' => $user->role,
         ]);
     }
 

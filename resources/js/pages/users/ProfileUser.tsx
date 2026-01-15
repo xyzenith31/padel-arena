@@ -89,7 +89,6 @@ const ProfileUser = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [activeModal, setActiveModal] = useState<string | null>(null);
-    
     const [notif, setNotif] = useState<NotificationState>({
         isOpen: false,
         type: 'info',
@@ -123,7 +122,6 @@ const ProfileUser = () => {
     const openModal = (field: string) => {
         let currentValue = '';
         if (field === 'name') currentValue = user.name || '';
-        if (field === 'username') currentValue = user.username || '';
         if (field === 'email') currentValue = user.email || '';
         if (field === 'phone_number') currentValue = user.phone_number || ''; 
 
@@ -162,7 +160,6 @@ const ProfileUser = () => {
         const formData = new FormData();
         formData.append('avatar', file);
         formData.append('name', user.name || '');
-        formData.append('username', user.username || '');
         formData.append('email', user.email || '');
 
         try {
@@ -265,7 +262,6 @@ const ProfileUser = () => {
                     } else {
                         const formData = new FormData();
                         formData.append('name', user.name || '');
-                        formData.append('username', user.username || '');
                         formData.append('email', user.email || '');
                         formData.append('phone_number', user.phone_number || ''); 
                         
@@ -349,7 +345,7 @@ const ProfileUser = () => {
                             </div>
 
                             <h2 className="text-xl font-black text-slate-800 mb-1">{user.name}</h2>
-                            <p className="text-slate-400 text-sm font-medium mb-4">@{user.username || 'username'}</p>
+                            <p className="text-slate-400 text-sm font-medium mb-4">{user.email}</p>
                             
                             <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
                                 <span className="bg-yellow-100 text-yellow-700 text-[10px] px-3 py-1.5 rounded-full uppercase font-bold tracking-wider shadow-sm border border-yellow-200">
@@ -390,7 +386,6 @@ const ProfileUser = () => {
                         </h3>
                         <div className="bg-white rounded-[2rem] shadow-[0_4px_30px_rgba(0,0,0,0.02)] border border-slate-100 p-6 space-y-1">
                             <RenderProfileItem icon={User} label="Nama Lengkap" value={user.name} fieldKey="name" />
-                            <RenderProfileItem icon={Sparkles} label="Username" value={user.username} fieldKey="username" />
                             <RenderProfileItem icon={Mail} label="Alamat Email" value={user.email} fieldKey="email" />
                             <RenderProfileItem icon={Phone} label="Nomor Telepon" value={user.phone_number} fieldKey="phone_number" />
                         </div>

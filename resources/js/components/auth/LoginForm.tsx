@@ -21,9 +21,10 @@ export default function LoginForm() {
     const { login, googleLogin, user, getUser } = useAuth(); 
     const navigate = useNavigate();
     const location = useLocation();
-    const [loginInput, setLoginInput] = useState(''); 
+    const [email, setEmail] = useState(''); 
     const [password, setPassword] = useState('');
     const [processing, setProcessing] = useState(false);
+    
     const [notif, setNotif] = useState<NotificationState>({
         isOpen: false,
         type: 'info',
@@ -38,9 +39,15 @@ export default function LoginForm() {
     const closeNotif = () => setNotif(prev => ({ ...prev, isOpen: false }));
 
     const getRedirectPath = (role: string) => {
-        if (role === 'admin') return '/admin/dashboard';
-        if (role === 'teknisi') return '/teknisi/dashboard';
-        return '/dashboard';
+        switch (role) {
+            case 'teknisi':
+                return '/teknisi/dashboard';
+            case 'admin':
+                return '/admin/dashboard';
+            case 'user':
+            default:
+                return '/dashboard';
+        }
     };
 
     useEffect(() => {
@@ -67,7 +74,7 @@ export default function LoginForm() {
         setProcessing(true);
         
         try {
-            const response = await login({ login: loginInput, password });
+            const response = await login({ email: email, password });
             
             if (response && response.require_verification) {
                  setNotif({
@@ -117,9 +124,9 @@ export default function LoginForm() {
                         errorMessage = "Password yang Anda masukkan tidak cocok.";
                     } else if (data.message?.toLowerCase().includes('found') || data.message?.toLowerCase().includes('email')) {
                         errorTitle = "Akun Tidak Ditemukan";
-                        errorMessage = "Email atau Username tersebut belum terdaftar.";
+                        errorMessage = "Email belum terdaftar. Silakan registrasi terlebih dahulu.";
                     } else {
-                        errorMessage = data.message || "Username atau Password salah.";
+                        errorMessage = "Email atau Password salah.";
                     }
                 }
             }
@@ -165,23 +172,27 @@ export default function LoginForm() {
 
                 <div className="space-y-5">
                     <Input
-                        label="Username atau Email"
-                        type="text"
+                        label="Email"
+                        type="email"
+                        name="email"
                         placeholder="nama@email.com"
-                        value={loginInput}
-                        onChange={(e) => setLoginInput(e.target.value)}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         icon={<Mail size={20} />}
                         autoFocus
+                        required
                     />
                     
                     <div className="space-y-1.5">
                         <Input
                             label="Password"
                             type="password"
+                            name="password"
                             placeholder="••••••••"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             icon={<Lock size={20} />}
+                            required
                         />
                         <div className="flex justify-end pt-1">
                             <Link 
@@ -220,7 +231,7 @@ export default function LoginForm() {
 
                 <motion.button
                     type="button"
-                    whileHover={{ scale: 1.02, backgroundColor: "#FFFBEB", borderColor: "#FCD34D" }} // Hover: Yellow tint
+                    whileHover={{ scale: 1.02, backgroundColor: "#FFFBEB", borderColor: "#FCD34D" }}
                     whileTap={{ scale: 0.98 }}
                     onClick={googleLogin}
                     className="w-full flex items-center justify-center px-4 py-3.5 border border-slate-200 rounded-xl shadow-sm text-sm font-bold text-slate-700 bg-white transition-all hover:text-yellow-700 hover:shadow-md group"

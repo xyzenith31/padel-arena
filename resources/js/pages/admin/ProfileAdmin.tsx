@@ -70,7 +70,6 @@ const ProfileAdmin = () => {
         let currentValue = '';
         
         if (field === 'name') currentValue = user.name || '';
-        if (field === 'username') currentValue = user.username || '';
         if (field === 'email') currentValue = user.email || '';
         if (field === 'phone_number') currentValue = user.phone_number || ''; 
 
@@ -92,9 +91,7 @@ const ProfileAdmin = () => {
             setIsLoading(true);
             const formData = new FormData();
             formData.append('avatar', file);
-            
             formData.append('name', user.name || '');
-            formData.append('username', user.username || '');
             formData.append('email', user.email || '');
 
             try {
@@ -143,7 +140,6 @@ const ProfileAdmin = () => {
                 const formData = new FormData();
                 
                 formData.append('name', user.name || '');
-                formData.append('username', user.username || '');
                 formData.append('email', user.email || '');
                 formData.append('phone_number', user.phone_number || ''); 
                 
@@ -215,7 +211,7 @@ const ProfileAdmin = () => {
                     </div>
                     <div>
                         <h2 className="text-xl font-bold text-gray-800">{user.name}</h2>
-                        <p className="text-gray-500 text-sm">Manage your profile information and security.</p>
+                        <p className="text-gray-500 text-sm">{user.email}</p>
                     </div>
                 </div>
 
@@ -223,7 +219,6 @@ const ProfileAdmin = () => {
                     <h3 className="text-lg font-bold text-gray-800 mb-4">Personal Information</h3>
                     
                     <RenderProfileItem label="Full Name" value={user.name} fieldKey="name" />
-                    <RenderProfileItem label="Username" value={user.username} fieldKey="username" />
                     <RenderProfileItem label="Email Address" value={user.email} fieldKey="email" />
                     <RenderProfileItem label="Phone Number" value={user.phone_number} fieldKey="phone_number" />
 

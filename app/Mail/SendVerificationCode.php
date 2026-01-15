@@ -21,7 +21,7 @@ class SendVerificationCode extends Mailable
 
     public function build()
     {
-        return $this->subject('Kode Verifikasi Pitstop Project')
+        return $this->subject('Kode Verifikasi Padel Arena')
                     ->view('emails.verification_code');
     }
 }

@@ -34,7 +34,7 @@ class SocialAuthController extends Controller
                 $user->update([
                     'google_id' => $googleUser->getId(),
                     'avatar' => $user->avatar ?? $googleUser->getAvatar(),
-                    'email_verified_at' => now(),
+                    'email_verified_at' => $user->email_verified_at ?? now(),
                 ]);
             }
 
@@ -57,10 +57,9 @@ class SocialAuthController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-            'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
-            'google_id' => ['required', 'string', 'unique:'.User::class],
-            'date_of_birth' => ['required', 'date'],
+            'email' => ['required', 'string', 'email', 'max:255'], 
+            'google_id' => ['required', 'string'],
+            'phone_number' => ['required', 'string', 'max:20', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -68,17 +67,20 @@ class SocialAuthController extends Controller
             ['email' => $request->email],
             [
                 'name' => $request->name,
-                'username' => $request->username,
                 'google_id' => $request->google_id,
-                'date_of_birth' => $request->date_of_birth,
+                'phone_number' => $request->phone_number,
                 'password' => Hash::make($request->password),
                 'email_verified_at' => now(),
-                'role' => 'user',
+                'role' => 'user', // Default role
+                'avatar' => $request->avatar ?? null, 
             ]
         );
 
         Auth::login($user);
 
-        return response()->json($user);
+        return response()->json([
+            'message' => 'Registrasi berhasil',
+            'user' => $user
+        ]);
     }
 }
