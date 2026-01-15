@@ -3,32 +3,49 @@ import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import axios from 'axios';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+
+// Contexts
 import { AuthProvider } from './context/AuthContext';
 import { AccountProvider } from './context/AccountContext';
 import { UserProvider } from './context/UserContext';
+
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css'; 
+
+// Layouts
 import AuthLayout from './layouts/AuthLayout';
 import AdminLayout from './layouts/AdminLayout';
 import UserLayout from './layouts/UserLayout';
+
+// Pages Auth
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import VerificationPage from './pages/auth/VerificationPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage'; 
 import CompleteRegistrationPage from './pages/auth/CompleteRegistrationPage';
+
+// Pages Admin
 import DashboardAdmin from './pages/admin/DashboardAdmin'; 
+import JadwalOrderAdmin from './pages/admin/JadwalOrderAdmin'; 
+import RefundPelangganAdmin from './pages/admin/RefundPelangganAdmin';
 import ProfileAdmin from './pages/admin/ProfileAdmin';
 import ManajemenPengguna from './pages/admin/ManajemenPengguna';
 import KelolaLapangan from './pages/admin/KelolaLapangan';
+import KeluhanPelangganAdmin from './pages/admin/KeluhanPelangganAdmin';
 import CreateEditLapangan from './pages/admin/CreateEditLapangan';
+
+// Pages User
 import BerandaUser from './pages/users/BerandaUser';
 import ProfileUser from './pages/users/ProfileUser';
 import BookingLapanganUser from './pages/users/BookingLapanganUser';
 import DetailReservasiUser from './pages/users/DetailReservasiUser';
 import DetailLapanganUser from './pages/users/DetailLapanganUser';
+import CustomerService from './pages/users/CustomerService';
 import DetailPaymentUser from './pages/users/DetailPaymentUser';
 import ReservasiLapangan from './pages/users/ReservasiLapangan';
+
+// Pages 404
 import NotFoundNavbar from './pages/404/404Navbar';
 import NotFoundSidebar from './pages/404/404Sidebar';
 import NotFoundAuth from './pages/404/404Auth';
@@ -81,7 +98,10 @@ const App = () => {
                                 <Route path="dashboard" element={<DashboardAdmin />} />
                                 <Route path="profile" element={<ProfileAdmin />} />
                                 <Route path="users" element={<ManajemenPengguna />} /> 
+                                <Route path="bookings" element={<JadwalOrderAdmin />} />
+                                <Route path="refunds" element={<RefundPelangganAdmin />} />
                                 <Route path="padel-courts" element={<KelolaLapangan />} />
+                                <Route path="complaints" element={<KeluhanPelangganAdmin />} />
                                 <Route path="padel-courts/create" element={<CreateEditLapangan />} />
                                 <Route path="padel-courts/edit/:id" element={<CreateEditLapangan />} />
                                 <Route index element={<Navigate to="/admin/dashboard" />} />
@@ -94,6 +114,7 @@ const App = () => {
                                 <Route path="profile" element={<ProfileUser />} />
                                 <Route path="booking" element={<BookingLapanganUser />} />
                                 <Route path="booking/detail/:id" element={<DetailReservasiUser />} />
+                                <Route path="support" element={<CustomerService />} /> {/* URL User */}
                                 <Route path="booking/court/:id" element={<DetailLapanganUser />} />
                                 <Route path="booking/reservasi" element={<ReservasiLapangan />} />
                                 <Route path="booking/payment/:id" element={<DetailPaymentUser />} />

@@ -38,4 +38,9 @@ class Booking extends Model
     public function review() {
         return $this->hasOne(Review::class);
     }
+
+    public function refund()
+    {
+        return $this->hasOne(Refund::class);
+    }
 }

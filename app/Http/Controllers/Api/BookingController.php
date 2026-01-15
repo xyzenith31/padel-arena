@@ -13,6 +13,48 @@ use Midtrans\Config;
 
 class BookingController extends Controller
 {
+    public function index(Request $request)
+    {
+        $query = Booking::with(['user', 'court']) 
+            ->latest();
+
+        if ($request->padel_court_id) {
+            $query->where('padel_court_id', $request->padel_court_id);
+        }
+
+        if ($request->date) {
+            $query->whereDate('booking_date', $request->date);
+        }
+
+        if ($request->month) {
+            $query->whereMonth('booking_date', $request->month);
+        }
+
+        if ($request->year) {
+            $query->whereYear('booking_date', $request->year);
+        }
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        $bookings = $query->get()->map(function($booking) {
+            return [
+                'id' => $booking->id,
+                'customer_name' => $booking->user->name ?? 'User Terhapus',
+                'customer_email' => $booking->user->email ?? '-',
+                'court_name' => $booking->court->name ?? 'Lapangan Terhapus',
+                'date' => $booking->booking_date,
+                'time' => substr($booking->start_time, 0, 5) . ' - ' . substr($booking->end_time, 0, 5),
+                'total_price' => $booking->total_price,
+                'status' => $booking->status,
+                'created_at' => $booking->created_at->format('Y-m-d H:i'),
+            ];
+        });
+
+        return response()->json(['data' => $bookings]);
+    }
+    
     public function __construct()
     {
         Config::$serverKey = config('services.midtrans.server_key');

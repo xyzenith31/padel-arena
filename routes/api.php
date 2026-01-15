@@ -7,7 +7,9 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\PadelController;
 use App\Http\Controllers\Api\PadelPublicController; 
+use App\Http\Controllers\Api\RefundController;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\ComplaintController;
 use App\Http\Controllers\Api\ReviewController;
 
 /*
@@ -26,6 +28,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::post('/complaints', [ComplaintController::class, 'store']);
+    Route::get('/my-complaints', [ComplaintController::class, 'myComplaints']);
+    Route::get('/admin/complaints', [ComplaintController::class, 'index']);
+    Route::post('/admin/complaints/{id}', [ComplaintController::class, 'update']);
+    Route::post('/refunds', [RefundController::class, 'store']);
+    Route::get('/admin/refunds', [RefundController::class, 'index']);
+    Route::post('/admin/refunds/{id}/process', [RefundController::class, 'process']);
     Route::get('/admin/users', [UserManagementController::class, 'index']);
     Route::get('/admin/users/{id}', [UserManagementController::class, 'show']);
     Route::post('/admin/users', [UserManagementController::class, 'store']);
@@ -36,8 +45,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/padel-courts', [PadelController::class, 'store']); 
     Route::post('/admin/padel-courts/{id}', [PadelController::class, 'update']); 
     Route::delete('/admin/padel-courts/{id}', [PadelController::class, 'destroy']);
-    Route::post('/bookings', [BookingController::class, 'store']);       // Buat Order
-    Route::get('/my-bookings', [BookingController::class, 'myBookings']); // History Order
+    Route::post('/bookings', [BookingController::class, 'store']);  
+    Route::get('/admin/bookings', [BookingController::class, 'index']);
+    Route::get('/my-bookings', [BookingController::class, 'myBookings']);
     Route::post('/midtrans/check-status', [PaymentController::class, 'checkTransactionStatus']);
     Route::post('/reviews', [ReviewController::class, 'store']);
 });

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LayoutDashboard, Users, Settings, LogOut, Menu, X, Map } from 'lucide-react';
+import { LayoutDashboard, Users, Settings, LogOut, Menu, X, Map, Calendar, MessageSquareWarning } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ProfiledropdownAdmin from '../components/ux/ProfileDropdownAdmin';
+import { BiMoneyWithdraw } from 'react-icons/bi';
 
 export default function AdminLayout() {
     const { user, logout, isLoading } = useAuth();
@@ -20,6 +21,9 @@ export default function AdminLayout() {
         { name: 'Dashboard', path: '/admin/dashboard', icon: <LayoutDashboard size={20} /> },
         { name: 'Manajemen Pengguna', path: '/admin/users', icon: <Users size={20} /> },
         { name: 'Manajemen Lapangan', path: '/admin/padel-courts', icon: <Map size={20} /> },
+        { name: 'Jadwal Booking', path: '/admin/bookings', icon: <Calendar size={20} /> },
+        { name: 'Pengembalian Dana', path: '/admin/refunds', icon: <BiMoneyWithdraw size={20} /> },
+        { name: 'Keluhan Pelanggan', path: '/admin/complaints', icon: <MessageSquareWarning size={20} /> },
         { name: 'Pengaturan', path: '/admin/settings', icon: <Settings size={20} /> },
     ];
 

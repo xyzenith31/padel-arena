@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { FiCalendar, FiClock, FiStar, FiX } from 'react-icons/fi';
+import { FiCalendar, FiClock, FiStar, FiX, FiRefreshCw, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
 
 const ReservasiLapangan = () => {
     const [bookings, setBookings] = useState<any[]>([]);
@@ -10,6 +10,14 @@ const ReservasiLapangan = () => {
     const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
+    const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
+    const [refundData, setRefundData] = useState({
+        reason: '',
+        bank_name: '',
+        account_number: '',
+        account_holder: ''
+    });
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
@@ -60,9 +68,38 @@ const ReservasiLapangan = () => {
         }
     };
 
+    const openRefundModal = (bookingId: string) => {
+        setSelectedBookingId(bookingId);
+        setRefundData({ reason: '', bank_name: '', account_number: '', account_holder: '' });
+        setIsRefundModalOpen(true);
+    };
+
+    const handleRefundSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedBookingId) return;
+
+        setIsSubmitting(true);
+        try {
+            await axios.post('/api/refunds', {
+                booking_id: selectedBookingId,
+                ...refundData
+            });
+            alert("Permintaan refund berhasil dikirim. Menunggu persetujuan Admin.");
+            setIsRefundModalOpen(false);
+            fetchBookings();
+        } catch (error: any) {
+            alert(error.response?.data?.message || "Gagal mengajukan refund.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     const getStatusColor = (statusLabel: string, rawStatus: string) => {
         if (rawStatus === 'pending') return 'bg-orange-100 text-orange-700 border-orange-200';
         if (rawStatus === 'cancelled') return 'bg-red-100 text-red-700 border-red-200';
+        if (rawStatus === 'refund_requested') return 'bg-purple-100 text-purple-700 border-purple-200';
+        if (rawStatus === 'refunded') return 'bg-gray-200 text-gray-700 border-gray-300';
+        if (rawStatus === 'rejected') return 'bg-red-100 text-red-700 border-red-200';
         if (statusLabel === 'Sedang Berjalan / Selesai') return 'bg-blue-100 text-blue-700 border-blue-200';
         if (statusLabel === 'Menunggu Jadwal Hari Ini') return 'bg-green-100 text-green-700 border-green-200';
         return 'bg-gray-100 text-gray-700 border-gray-200';
@@ -86,7 +123,10 @@ const ReservasiLapangan = () => {
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-2">
                                     <span className={`px-3 py-1 text-xs font-bold rounded-full border ${getStatusColor(booking.status_label, booking.status)}`}>
-                                        {booking.status === 'pending' ? 'MENUNGGU PEMBAYARAN' : booking.status_label}
+                                        {booking.status === 'pending' ? 'MENUNGGU PEMBAYARAN' : 
+                                         booking.status === 'refund_requested' ? 'REFUND DIAJUKAN' :
+                                         booking.status === 'refunded' ? 'DANA DIKEMBALIKAN' :
+                                         booking.status_label}
                                     </span>
                                     <span className="text-xs text-gray-400">ID: #{booking.id.substring(0,8)}</span>
                                 </div>
@@ -129,6 +169,26 @@ const ReservasiLapangan = () => {
                                     >
                                         <FiStar className="fill-current" /> Beri Ulasan
                                     </button>
+                                )}
+
+                                {booking.status === 'paid' && (
+                                     <button
+                                        onClick={() => openRefundModal(booking.id)}
+                                        className="text-purple-600 text-xs font-bold hover:underline flex items-center gap-1 mt-1"
+                                    >
+                                        <FiRefreshCw /> Ajukan Refund
+                                    </button>
+                                )}
+
+                                {booking.status === 'refund_requested' && (
+                                    <span className="text-xs text-purple-600 italic flex items-center gap-1 mt-1">
+                                        <FiClock /> Menunggu Persetujuan
+                                    </span>
+                                )}
+                                {booking.status === 'refunded' && (
+                                    <span className="text-xs text-gray-500 font-bold flex items-center gap-1 mt-1">
+                                        <FiCheckCircle /> Selesai
+                                    </span>
                                 )}
                             </div>
                         </div>
@@ -175,6 +235,66 @@ const ReservasiLapangan = () => {
                                 className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg disabled:opacity-50"
                             >
                                 {isSubmitting ? 'Mengirim...' : 'Kirim Ulasan'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {isRefundModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative animate-in fade-in zoom-in duration-200">
+                        <button onClick={() => setIsRefundModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                            <FiX size={24} />
+                        </button>
+                        
+                        <h2 className="text-xl font-bold text-gray-800 mb-1">Ajukan Pengembalian Dana</h2>
+                        <p className="text-sm text-gray-500 mb-4">Dana akan dikembalikan via Midtrans atau Transfer Manual.</p>
+                        
+                        <form onSubmit={handleRefundSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Alasan Refund</label>
+                                <textarea 
+                                    required 
+                                    className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-purple-500 outline-none" 
+                                    rows={2}
+                                    placeholder="Contoh: Salah jadwal, Berhalangan hadir..."
+                                    value={refundData.reason}
+                                    onChange={e => setRefundData({...refundData, reason: e.target.value})}
+                                />
+                            </div>
+                            
+                            <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                <h4 className="text-xs font-bold text-blue-800 mb-2 flex items-center gap-1"><FiAlertCircle/> Rekening Tujuan (Wajib)</h4>
+                                <p className="text-[10px] text-blue-600 mb-3">Jika refund otomatis gagal, admin akan mentransfer ke rekening ini.</p>
+                                
+                                <div className="space-y-2">
+                                    <input 
+                                        type="text" required placeholder="Nama Bank / E-Wallet (BCA, DANA, OVO)"
+                                        className="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        value={refundData.bank_name}
+                                        onChange={e => setRefundData({...refundData, bank_name: e.target.value})}
+                                    />
+                                    <input 
+                                        type="text" required placeholder="Nomor Rekening / HP"
+                                        className="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        value={refundData.account_number}
+                                        onChange={e => setRefundData({...refundData, account_number: e.target.value})}
+                                    />
+                                    <input 
+                                        type="text" required placeholder="Atas Nama (Pemilik Rekening)"
+                                        className="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                        value={refundData.account_holder}
+                                        onChange={e => setRefundData({...refundData, account_holder: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+
+                            <button 
+                                type="submit" disabled={isSubmitting}
+                                className="w-full bg-purple-600 text-white font-bold py-3 rounded-xl hover:bg-purple-700 transition shadow-lg disabled:opacity-50"
+                            >
+                                {isSubmitting ? 'Memproses...' : 'Kirim Pengajuan'}
                             </button>
                         </form>
                     </div>
