@@ -2,7 +2,7 @@ import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProfileDropdownUser from '../components/ux/ProfileDropdownUser';
 import { motion } from 'framer-motion';
-import { Home } from 'lucide-react';
+import { Home, Search, Calendar } from 'lucide-react';
 
 export default function UserLayout() {
     const { user, isLoading } = useAuth();
@@ -20,6 +20,8 @@ export default function UserLayout() {
 
     const navLinks = [
         { name: 'Beranda', path: '/dashboard', icon: <Home size={20} /> },
+        { name: 'Cari Lapangan', path: '/booking', icon: <Search size={20} /> },
+        { name: 'Riwayat Reservasi', path: '/booking/reservasi', icon: <Calendar size={20} /> },
     ];
 
     return (
@@ -51,7 +53,9 @@ export default function UserLayout() {
 
                             <div className="hidden md:flex items-center bg-white p-1.5 rounded-2xl border-2 border-yellow-100/80 shadow-[0_8px_30px_rgb(250,204,21,0.25)] relative z-10">
                                 {navLinks.map((link) => {
-                                    const isActive = location.pathname === link.path;
+                                    const isActive = location.pathname === link.path || 
+                                                     (link.path === '/booking' && location.pathname.startsWith('/booking/court'));
+                                    
                                     return (
                                         <Link 
                                             key={link.path}

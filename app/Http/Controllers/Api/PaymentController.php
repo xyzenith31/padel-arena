@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Order;
+use App\Models\Booking;
 use Midtrans\Config;
 use Midtrans\Transaction;
 use Midtrans\Notification;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -18,62 +19,61 @@ class PaymentController extends Controller
 
     private function configureMidtrans()
     {
-        Config::$serverKey = config('services.midtrans.server_key') ?? env('MIDTRANS_SERVER_KEY');
-        Config::$isProduction = config('services.midtrans.is_production') ?? env('MIDTRANS_IS_PRODUCTION', false);
+        Config::$serverKey = config('services.midtrans.server_key');
+        Config::$isProduction = config('services.midtrans.is_production');
         Config::$isSanitized = true;
         Config::$is3ds = true;
     }
 
     public function checkTransactionStatus(Request $request)
     {
-        $request->validate(['midtrans_order_id' => 'required|string']);
+        $request->validate(['order_id' => 'required|string']);
 
         $this->configureMidtrans();
 
         try {
-            $midtransStatus = Transaction::status($request->midtrans_order_id);
-            $parts = explode('-', $request->midtrans_order_id);
-            $realOrderId = $parts[1] ?? null;
+            $orderId = $request->order_id;
+            $midtransStatus = Transaction::status($orderId);
+            $booking = Booking::find($orderId);
+
+            if (!$booking) {
+                return response()->json(['message' => 'Booking tidak ditemukan'], 404);
+            }
+
+            $transactionStatus = $midtransStatus->transaction_status;
+            $fraudStatus = $midtransStatus->fraud_status;
+            $paymentType = $midtransStatus->payment_type;
             
-            $order = Order::find($realOrderId);
+            $newStatus = 'pending';
 
-            if (!$order) {
-                return response()->json(['message' => 'Order database tidak ditemukan'], 404);
+            if ($transactionStatus == 'capture') {
+                $newStatus = ($fraudStatus == 'challenge') ? 'pending' : 'paid';
+            } else if ($transactionStatus == 'settlement') {
+                $newStatus = 'paid';
+            } else if ($transactionStatus == 'pending') {
+                $newStatus = 'pending';
+            } else if ($transactionStatus == 'deny' || $transactionStatus == 'expire' || $transactionStatus == 'cancel') {
+                $newStatus = 'cancelled';
             }
 
-            $status = $midtransStatus->transaction_status;
-            $type = $midtransStatus->payment_type;
-            $fraud = $midtransStatus->fraud_status;
-            $newPaymentStatus = null;
-
-            if ($status == 'capture') {
-                $newPaymentStatus = ($fraud == 'challenge') ? 'waiting_approval' : 'paid';
-            } else if ($status == 'settlement') {
-                $newPaymentStatus = 'paid'; 
-            } else if ($status == 'pending') {
-                $newPaymentStatus = 'pending';
-            } else if ($status == 'deny' || $status == 'expire' || $status == 'cancel') {
-                $newPaymentStatus = 'failed';
-            }
-
-            if ($newPaymentStatus === 'paid') {
-                $order->update([
-                    'payment_status' => 'paid',
-                    'status' => 'completed',
-                    'payment_method' => 'midtrans (' . $type . ')'
+            if ($newStatus === 'paid') {
+                $booking->update([
+                    'status' => 'paid',
                 ]);
-            } else if ($newPaymentStatus) {
-                $order->update(['payment_status' => $newPaymentStatus]);
+            } else if ($newStatus === 'cancelled') {
+                $booking->update(['status' => 'cancelled']);
             }
 
             return response()->json([
-                'message' => 'Status checked',
-                'current_status' => $newPaymentStatus,
-                'order_id' => $order->id
+                'message' => 'Status berhasil diperbarui',
+                'status' => $newStatus,
+                'midtrans_status' => $transactionStatus,
+                'data' => $booking
             ]);
 
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Midtrans Error: ' . $e->getMessage()], 500);
+            Log::error("Midtrans Error: " . $e->getMessage());
+            return response()->json(['message' => 'Gagal mengecek status: ' . $e->getMessage()], 500);
         }
     }
 
@@ -89,35 +89,26 @@ class PaymentController extends Controller
 
         $transaction = $notif->transaction_status;
         $type = $notif->payment_type;
-        $orderIdRaw = $notif->order_id;
+        $orderId = $notif->order_id;
         $fraud = $notif->fraud_status;
 
-        $parts = explode('-', $orderIdRaw);
-        $realOrderId = $parts[1] ?? null;
-
-        if (!$realOrderId) return response()->json(['message' => 'Invalid Order ID Format'], 400);
-
-        $order = Order::find($realOrderId);
-        if (!$order) return response()->json(['message' => 'Order Not Found'], 404);
+        $booking = Booking::find($orderId);
+        if (!$booking) return response()->json(['message' => 'Booking Not Found'], 404);
 
         if ($transaction == 'capture') {
             if ($type == 'credit_card') {
                 if ($fraud == 'challenge') {
-                    $order->update(['payment_status' => 'waiting_approval']);
+                    $booking->update(['status' => 'pending']);
                 } else {
-                    $order->update(['payment_status' => 'paid', 'status' => 'completed']);
+                    $booking->update(['status' => 'paid']);
                 }
             }
         } else if ($transaction == 'settlement') {
-            $order->update(['payment_status' => 'paid', 'status' => 'completed']);
+            $booking->update(['status' => 'paid']);
         } else if ($transaction == 'pending') {
-            $order->update(['payment_status' => 'pending']);
-        } else if ($transaction == 'deny') {
-            $order->update(['payment_status' => 'failed']);
-        } else if ($transaction == 'expire') {
-            $order->update(['payment_status' => 'expired']);
-        } else if ($transaction == 'cancel') {
-            $order->update(['payment_status' => 'cancelled']);
+            $booking->update(['status' => 'pending']);
+        } else if ($transaction == 'deny' || $transaction == 'expire' || $transaction == 'cancel') {
+            $booking->update(['status' => 'cancelled']);
         }
 
         return response()->json(['message' => 'Payment status updated']);

@@ -3,42 +3,32 @@ import { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import axios from 'axios';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-
-// Contexts
 import { AuthProvider } from './context/AuthContext';
 import { AccountProvider } from './context/AccountContext';
 import { UserProvider } from './context/UserContext';
-
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css'; 
-
-// Layouts
 import AuthLayout from './layouts/AuthLayout';
 import AdminLayout from './layouts/AdminLayout';
 import UserLayout from './layouts/UserLayout';
-
-// Pages Auth
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import VerificationPage from './pages/auth/VerificationPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage'; 
 import CompleteRegistrationPage from './pages/auth/CompleteRegistrationPage';
-
-// Pages Admin
 import DashboardAdmin from './pages/admin/DashboardAdmin'; 
 import ProfileAdmin from './pages/admin/ProfileAdmin';
 import ManajemenPengguna from './pages/admin/ManajemenPengguna';
-
-// Pages Admin
 import KelolaLapangan from './pages/admin/KelolaLapangan';
 import CreateEditLapangan from './pages/admin/CreateEditLapangan';
-
-// Pages User
 import BerandaUser from './pages/users/BerandaUser';
 import ProfileUser from './pages/users/ProfileUser';
-
-// Pages 404
+import BookingLapanganUser from './pages/users/BookingLapanganUser';
+import DetailReservasiUser from './pages/users/DetailReservasiUser';
+import DetailLapanganUser from './pages/users/DetailLapanganUser';
+import DetailPaymentUser from './pages/users/DetailPaymentUser';
+import ReservasiLapangan from './pages/users/ReservasiLapangan';
 import NotFoundNavbar from './pages/404/404Navbar';
 import NotFoundSidebar from './pages/404/404Sidebar';
 import NotFoundAuth from './pages/404/404Auth';
@@ -102,6 +92,11 @@ const App = () => {
                             <Route path="/" element={<UserLayout />}>
                                 <Route path="dashboard" element={<BerandaUser />} />
                                 <Route path="profile" element={<ProfileUser />} />
+                                <Route path="booking" element={<BookingLapanganUser />} />
+                                <Route path="booking/detail/:id" element={<DetailReservasiUser />} />
+                                <Route path="booking/court/:id" element={<DetailLapanganUser />} />
+                                <Route path="booking/reservasi" element={<ReservasiLapangan />} />
+                                <Route path="booking/payment/:id" element={<DetailPaymentUser />} />
                                 <Route index element={<Navigate to="/dashboard" />} />
                                 <Route path="*" element={<NotFoundNavbar />} />
                             </Route>

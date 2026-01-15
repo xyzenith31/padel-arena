@@ -35,4 +35,19 @@ class PadelCourt extends Model
         'price_per_hour' => 'decimal:2',
         'price_per_day' => 'decimal:2',
     ];
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
+    
+    public function getAverageRatingAttribute()
+    {
+        return round($this->reviews()->avg('rating'), 1) ?? 0;
+    }
 }

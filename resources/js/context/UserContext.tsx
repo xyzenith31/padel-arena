@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react'; // Tambah useEffect jika ingin auto-fetch (opsional)
 import axios from 'axios';
 
 interface User {
@@ -27,7 +27,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setLoading(true);
         try {
             const response = await axios.get('/api/admin/users');
-            setUsers(response.data);
+            
+            if (Array.isArray(response.data)) {
+                setUsers(response.data);
+            } else if (response.data.data && Array.isArray(response.data.data)) {
+                setUsers(response.data.data);
+            } else {
+                setUsers([]);
+            }
         } catch (error) {
             console.error("Gagal mengambil data user", error);
         } finally {
@@ -40,10 +47,13 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         try {
             await axios.delete(`/api/admin/users/${id}`);
-            setUsers(users.filter(user => user.id !== id));
+            
+            setUsers(prevUsers => prevUsers.filter(user => user.id !== id));
+            
+            alert("User berhasil dihapus");
         } catch (error) {
             console.error("Gagal menghapus user", error);
-            alert("Gagal menghapus user");
+            alert("Gagal menghapus user. Pastikan user tidak memiliki transaksi aktif.");
         }
     };
 
