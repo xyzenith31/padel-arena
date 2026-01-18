@@ -7,7 +7,7 @@ export interface UserData {
     username: string;
     email: string;
     phone_number: string;
-    role: 'admin' | 'teknisi' | 'user';
+    role: 'admin' | 'user';
     avatar?: string;
     avatar_url?: string;
     created_at?: string;

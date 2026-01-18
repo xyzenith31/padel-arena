@@ -33,5 +33,9 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
             'email_verified_at' => now(),
         ]);
+
+        $this->call([
+            PadelCourtSeeder::class,
+        ]);
     }
 }

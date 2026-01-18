@@ -10,7 +10,7 @@ export interface User {
     name: string;
     username: string;
     email: string;
-    role: 'admin' | 'teknisi' | 'user';
+    role: 'admin' | 'user';
     phone_number?: string | null;
     avatar?: string | null;
     email_verified_at: string | null; 

@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { FiCalendar, FiClock, FiStar, FiX, FiRefreshCw, FiAlertCircle, FiCheckCircle } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+    FiCalendar, FiClock, FiStar, FiChevronRight 
+} from 'react-icons/fi';
+import { Ticket, History, Star, RotateCcw } from 'lucide-react';
+import Notification from '../../components/ui/Notification';
+import Input from '../../components/ui/Input';
 
 const ReservasiLapangan = () => {
     const [bookings, setBookings] = useState<any[]>([]);
@@ -19,6 +25,12 @@ const ReservasiLapangan = () => {
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [notif, setNotif] = useState({ 
+        isOpen: false, 
+        type: 'success' as 'success' | 'error' | 'info' | 'warning', 
+        title: '', 
+        message: '' 
+    });
 
     useEffect(() => {
         fetchBookings();
@@ -42,264 +54,204 @@ const ReservasiLapangan = () => {
         setIsModalOpen(true);
     };
 
-    const closeReviewModal = () => {
-        setIsModalOpen(false);
-        setSelectedBookingId(null);
-    };
-
-    const submitReview = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!selectedBookingId) return;
-
-        setIsSubmitting(true);
-        try {
-            await axios.post('/api/reviews', {
-                booking_id: selectedBookingId,
-                rating,
-                comment
-            });
-            alert("Terima kasih atas ulasan Anda!");
-            closeReviewModal();
-            fetchBookings();
-        } catch (error: any) {
-            alert(error.response?.data?.message || "Gagal mengirim ulasan.");
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
     const openRefundModal = (bookingId: string) => {
         setSelectedBookingId(bookingId);
         setRefundData({ reason: '', bank_name: '', account_number: '', account_holder: '' });
         setIsRefundModalOpen(true);
     };
 
-    const handleRefundSubmit = async (e: React.FormEvent) => {
+    const submitReview = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedBookingId) return;
-
         setIsSubmitting(true);
         try {
-            await axios.post('/api/refunds', {
-                booking_id: selectedBookingId,
-                ...refundData
-            });
-            alert("Permintaan refund berhasil dikirim. Menunggu persetujuan Admin.");
-            setIsRefundModalOpen(false);
+            await axios.post('/api/reviews', { booking_id: selectedBookingId, rating, comment });
+            setNotif({ isOpen: true, type: 'success', title: 'Sukses!', message: 'Ulasan berhasil dikirim.' });
+            setIsModalOpen(false);
             fetchBookings();
         } catch (error: any) {
-            alert(error.response?.data?.message || "Gagal mengajukan refund.");
+            setNotif({ isOpen: true, type: 'error', title: 'Gagal', message: error.response?.data?.message || 'Gagal mengirim ulasan.' });
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const getStatusColor = (statusLabel: string, rawStatus: string) => {
-        if (rawStatus === 'pending') return 'bg-orange-100 text-orange-700 border-orange-200';
-        if (rawStatus === 'cancelled') return 'bg-red-100 text-red-700 border-red-200';
-        if (rawStatus === 'refund_requested') return 'bg-purple-100 text-purple-700 border-purple-200';
-        if (rawStatus === 'refunded') return 'bg-gray-200 text-gray-700 border-gray-300';
-        if (rawStatus === 'rejected') return 'bg-red-100 text-red-700 border-red-200';
-        if (statusLabel === 'Sedang Berjalan / Selesai') return 'bg-blue-100 text-blue-700 border-blue-200';
-        if (statusLabel === 'Menunggu Jadwal Hari Ini') return 'bg-green-100 text-green-700 border-green-200';
-        return 'bg-gray-100 text-gray-700 border-gray-200';
+    const handleRefundSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedBookingId) return;
+        setIsSubmitting(true);
+        try {
+            await axios.post('/api/refunds', { booking_id: selectedBookingId, ...refundData });
+            setNotif({ isOpen: true, type: 'success', title: 'Berhasil', message: 'Permintaan refund telah dikirim.' });
+            setIsRefundModalOpen(false);
+            fetchBookings();
+        } catch (error: any) {
+            setNotif({ isOpen: true, type: 'error', title: 'Gagal', message: error.response?.data?.message || 'Refund gagal diajukan.' });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const getStatusTheme = (statusLabel: string, rawStatus: string) => {
+        if (rawStatus === 'pending') return { bg: 'bg-orange-50', text: 'text-orange-600', border: 'border-orange-200', label: 'Menunggu Bayar' };
+        if (rawStatus === 'cancelled') return { bg: 'bg-red-50', text: 'text-red-600', border: 'border-red-100', label: 'Dibatalkan' };
+        if (rawStatus === 'refund_requested') return { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-100', label: 'Proses Refund' };
+        if (rawStatus === 'refunded') return { bg: 'bg-slate-100', text: 'text-slate-500', border: 'border-slate-200', label: 'Refund Selesai' };
+        if (statusLabel === 'Sedang Berjalan / Selesai') return { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-100', label: 'Selesai' };
+        if (statusLabel === 'Menunggu Jadwal Hari Ini') return { bg: 'bg-green-50', text: 'text-green-600', border: 'border-green-100', label: 'Main Hari Ini' };
+        return { bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-200', label: 'Terkonfirmasi' };
     };
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-5xl">
-            <h1 className="text-2xl font-bold mb-6">Riwayat Reservasi Saya</h1>
-            
-            {loading ? (
-                <div className="text-center py-10">Memuat data...</div>
-            ) : bookings.length === 0 ? (
-                <div className="bg-white p-8 rounded-xl shadow text-center">
-                    <p className="text-gray-500 mb-4">Anda belum memiliki riwayat reservasi.</p>
-                    <Link to="/booking" className="text-blue-600 font-bold hover:underline">Cari Lapangan Sekarang</Link>
+        <div className="w-full min-h-screen bg-white overflow-x-hidden font-sans">
+            <Notification {...notif} onClose={() => setNotif({ ...notif, isOpen: false })} singleButton={true} />
+
+            <header className="sticky top-0 z-40 bg-white px-8 py-6 border-b border-yellow-100 flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-black text-slate-800 tracking-tighter uppercase italic">Riwayat <span className="text-yellow-400">Reservasi</span></h1>
                 </div>
-            ) : (
-                <div className="space-y-4">
-                    {bookings.map((booking) => (
-                        <div key={booking.id} className="bg-white p-5 rounded-xl border shadow-sm hover:shadow-md transition flex flex-col md:flex-row justify-between gap-4">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <span className={`px-3 py-1 text-xs font-bold rounded-full border ${getStatusColor(booking.status_label, booking.status)}`}>
-                                        {booking.status === 'pending' ? 'MENUNGGU PEMBAYARAN' : 
-                                         booking.status === 'refund_requested' ? 'REFUND DIAJUKAN' :
-                                         booking.status === 'refunded' ? 'DANA DIKEMBALIKAN' :
-                                         booking.status_label}
-                                    </span>
-                                    <span className="text-xs text-gray-400">ID: #{booking.id.substring(0,8)}</span>
-                                </div>
-                                <h3 className="text-lg font-bold text-gray-800">{booking.court_name}</h3>
-                                <div className="mt-2 space-y-1 text-sm text-gray-600">
-                                    <div className="flex items-center gap-2"><FiCalendar /> {booking.date}</div>
-                                    <div className="flex items-center gap-2"><FiClock /> {booking.time}</div>
-                                </div>
-                            </div>
-                            
-                            <div className="flex flex-col items-end justify-center gap-2 min-w-[150px]">
-                                <div className="text-lg font-bold text-blue-600">
-                                    Rp {parseInt(booking.total_price).toLocaleString('id-ID')}
-                                </div>
-                                
-                                {booking.status === 'pending' && booking.snap_token && (
-                                    <button 
-                                        onClick={() => {
-                                            if(window.snap) window.snap.pay(booking.snap_token);
-                                        }}
-                                        className="bg-orange-500 text-white text-sm px-4 py-2 rounded-lg font-bold hover:bg-orange-600 w-full shadow-sm"
-                                    >
-                                        Bayar Sekarang
-                                    </button>
-                                )}
+                <Link to="/booking" className="hidden md:flex items-center gap-2 bg-yellow-400 text-black px-6 py-3 rounded-2xl font-black text-xs uppercase shadow-lg shadow-yellow-100 hover:scale-105 transition-transform">
+                    <Ticket size={16} /> Booking Baru
+                </Link>
+            </header>
 
-                                {(booking.status === 'paid' || booking.status === 'completed') && (
-                                    <Link 
-                                        to={`/booking/detail/${booking.id}`}
-                                        className="bg-gray-100 text-gray-700 text-sm px-4 py-2 rounded-lg font-medium hover:bg-gray-200 w-full text-center border"
-                                    >
-                                        Lihat Detail Tiket
-                                    </Link>
-                                )}
-
-                                {booking.can_review && (
-                                    <button
-                                        onClick={() => openReviewModal(booking.id)}
-                                        className="bg-yellow-400 text-yellow-900 text-sm px-4 py-2 rounded-lg font-bold hover:bg-yellow-500 w-full shadow-sm flex justify-center items-center gap-1"
-                                    >
-                                        <FiStar className="fill-current" /> Beri Ulasan
-                                    </button>
-                                )}
-
-                                {booking.status === 'paid' && (
-                                     <button
-                                        onClick={() => openRefundModal(booking.id)}
-                                        className="text-purple-600 text-xs font-bold hover:underline flex items-center gap-1 mt-1"
-                                    >
-                                        <FiRefreshCw /> Ajukan Refund
-                                    </button>
-                                )}
-
-                                {booking.status === 'refund_requested' && (
-                                    <span className="text-xs text-purple-600 italic flex items-center gap-1 mt-1">
-                                        <FiClock /> Menunggu Persetujuan
-                                    </span>
-                                )}
-                                {booking.status === 'refunded' && (
-                                    <span className="text-xs text-gray-500 font-bold flex items-center gap-1 mt-1">
-                                        <FiCheckCircle /> Selesai
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )}
-
-            {isModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative animate-in fade-in zoom-in duration-200">
-                        <button onClick={closeReviewModal} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                            <FiX size={24} />
-                        </button>
-                        
-                        <h2 className="text-xl font-bold text-center mb-1">Beri Ulasan</h2>
-                        <p className="text-center text-gray-500 text-sm mb-6">Bagaimana pengalaman mainmu?</p>
-                        
-                        <form onSubmit={submitReview}>
-                            <div className="flex justify-center gap-3 mb-6">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                    <button
-                                        key={star}
-                                        type="button"
-                                        onClick={() => setRating(star)}
-                                        className={`text-4xl transition hover:scale-110 focus:outline-none ${star <= rating ? 'text-yellow-400' : 'text-gray-200'}`}
-                                    >
-                                        <FiStar className="fill-current" />
-                                    </button>
-                                ))}
-                            </div>
-
-                            <textarea
-                                className="w-full border border-gray-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 outline-none mb-4"
-                                placeholder="Tulis komentar anda disini..."
-                                rows={3}
-                                required
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                            ></textarea>
-
-                            <button 
-                                type="submit" 
-                                disabled={isSubmitting}
-                                className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 transition shadow-lg disabled:opacity-50"
-                            >
-                                {isSubmitting ? 'Mengirim...' : 'Kirim Ulasan'}
-                            </button>
-                        </form>
+            <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full">
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-40">
+                        <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }} className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full" />
                     </div>
-                </div>
-            )}
-
-            {isRefundModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 relative animate-in fade-in zoom-in duration-200">
-                        <button onClick={() => setIsRefundModalOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
-                            <FiX size={24} />
-                        </button>
-                        
-                        <h2 className="text-xl font-bold text-gray-800 mb-1">Ajukan Pengembalian Dana</h2>
-                        <p className="text-sm text-gray-500 mb-4">Dana akan dikembalikan via Midtrans atau Transfer Manual.</p>
-                        
-                        <form onSubmit={handleRefundSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Alasan Refund</label>
-                                <textarea 
-                                    required 
-                                    className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-purple-500 outline-none" 
-                                    rows={2}
-                                    placeholder="Contoh: Salah jadwal, Berhalangan hadir..."
-                                    value={refundData.reason}
-                                    onChange={e => setRefundData({...refundData, reason: e.target.value})}
-                                />
-                            </div>
-                            
-                            <div className="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                                <h4 className="text-xs font-bold text-blue-800 mb-2 flex items-center gap-1"><FiAlertCircle/> Rekening Tujuan (Wajib)</h4>
-                                <p className="text-[10px] text-blue-600 mb-3">Jika refund otomatis gagal, admin akan mentransfer ke rekening ini.</p>
-                                
-                                <div className="space-y-2">
-                                    <input 
-                                        type="text" required placeholder="Nama Bank / E-Wallet (BCA, DANA, OVO)"
-                                        className="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                        value={refundData.bank_name}
-                                        onChange={e => setRefundData({...refundData, bank_name: e.target.value})}
-                                    />
-                                    <input 
-                                        type="text" required placeholder="Nomor Rekening / HP"
-                                        className="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                        value={refundData.account_number}
-                                        onChange={e => setRefundData({...refundData, account_number: e.target.value})}
-                                    />
-                                    <input 
-                                        type="text" required placeholder="Atas Nama (Pemilik Rekening)"
-                                        className="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                                        value={refundData.account_holder}
-                                        onChange={e => setRefundData({...refundData, account_holder: e.target.value})}
-                                    />
-                                </div>
-                            </div>
-
-                            <button 
-                                type="submit" disabled={isSubmitting}
-                                className="w-full bg-purple-600 text-white font-bold py-3 rounded-xl hover:bg-purple-700 transition shadow-lg disabled:opacity-50"
-                            >
-                                {isSubmitting ? 'Memproses...' : 'Kirim Pengajuan'}
-                            </button>
-                        </form>
+                ) : bookings.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-40 text-center">
+                        <History size={60} className="text-yellow-100 mb-6" />
+                        <h2 className="text-xl font-black text-slate-400 uppercase tracking-widest">Belum ada reservasi</h2>
                     </div>
+                ) : (
+                    <div className="w-full">
+                        {bookings.map((booking, idx) => {
+                            const theme = getStatusTheme(booking.status_label, booking.status);
+                            return (
+                                <motion.div 
+                                    key={booking.id}
+                                    initial={{ x: -20, opacity: 0 }}
+                                    animate={{ x: 0, opacity: 1 }}
+                                    transition={{ delay: idx * 0.05 }}
+                                    className="w-full border-b border-gray-50 hover:bg-yellow-50/30 transition-colors"
+                                >
+                                    <div className="w-full px-8 py-10 flex flex-col md:flex-row items-center justify-between gap-10">
+                                        <div className="flex items-center gap-8 w-full md:w-auto">
+                                            <div className="flex-shrink-0 w-24 h-24 rounded-[2.5rem] overflow-hidden border-4 border-yellow-400 shadow-xl shadow-yellow-100">
+                                                <img 
+                                                    src={booking.court_avatar ? `/storage/${booking.court_avatar}` : 'https://placehold.co/200x200?text=Padel'} 
+                                                    alt="Court" 
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <span className={`px-4 py-1 text-[9px] font-black rounded-full border uppercase tracking-widest ${theme.bg} ${theme.text} ${theme.border}`}>
+                                                        {theme.label}
+                                                    </span>
+                                                    <span className="text-[9px] font-bold text-slate-300 tracking-widest uppercase">#{booking.id.substring(0,8)}</span>
+                                                </div>
+                                                <h2 className="text-2xl font-black text-slate-800 tracking-tighter uppercase">{booking.court_name}</h2>
+                                                <div className="flex flex-wrap items-center gap-6 mt-3 text-xs font-bold text-slate-500">
+                                                    <div className="flex items-center gap-2"><FiCalendar className="text-yellow-500" /> {booking.date}</div>
+                                                    <div className="flex items-center gap-2"><FiClock className="text-yellow-500" /> {booking.time}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-col md:flex-row items-center gap-8 w-full md:w-auto">
+                                            <div className="text-center md:text-right">
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Biaya</p>
+                                                <p className="text-2xl font-black text-slate-800 italic tracking-tighter">
+                                                    Rp{parseInt(booking.total_price).toLocaleString('id-ID')}
+                                                </p>
+                                            </div>
+
+                                            <div className="flex gap-3 w-full md:w-auto">
+                                                {booking.status === 'pending' && booking.snap_token ? (
+                                                    <button onClick={() => window.snap?.pay(booking.snap_token)} className="flex-1 md:flex-none px-8 py-4 bg-yellow-400 text-black rounded-2xl font-black text-xs uppercase shadow-lg shadow-yellow-100 hover:scale-105 transition-transform">
+                                                        Bayar
+                                                    </button>
+                                                ) : (booking.status === 'paid' || booking.status === 'completed') ? (
+                                                    <Link to={`/booking/detail/${booking.id}`} className="flex-1 md:flex-none px-8 py-4 bg-white border-2 border-yellow-400 text-yellow-600 rounded-2xl font-black text-xs uppercase flex items-center justify-center gap-2 hover:bg-yellow-400 hover:text-white transition-all">
+                                                        Detail <FiChevronRight />
+                                                    </Link>
+                                                ) : null}
+
+                                                {booking.can_review && (
+                                                    <button onClick={() => openReviewModal(booking.id)} className="flex-1 md:flex-none px-6 py-4 bg-yellow-400 text-black rounded-2xl font-black text-xs uppercase flex items-center justify-center gap-2 shadow-lg shadow-yellow-100 hover:scale-105 transition-transform">
+                                                        <Star size={14} fill="currentColor" /> Ulas
+                                                    </button>
+                                                )}
+
+                                                {booking.status === 'paid' && (
+                                                     <button onClick={() => openRefundModal(booking.id)} className="p-4 text-slate-300 hover:text-yellow-500 transition-colors">
+                                                        <RotateCcw size={22} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                )}
+            </motion.main>
+
+            <AnimatePresence>
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-yellow-900/5 backdrop-blur-sm" />
+                        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-yellow-100">
+                            <div className="p-10 text-center">
+                                <h2 className="text-2xl font-black text-slate-800 tracking-tighter mb-8 uppercase">Beri <span className="text-yellow-400 italic">Bintang</span></h2>
+                                <form onSubmit={submitReview}>
+                                    <div className="flex justify-center gap-4 mb-8">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <button key={star} type="button" onClick={() => setRating(star)} className={`text-4xl transition-all hover:scale-110 ${star <= rating ? 'text-yellow-400' : 'text-slate-100'}`}>
+                                                <FiStar fill="currentColor" />
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <Input label="Ulasan Anda" placeholder="Ceritakan pengalamanmu..." value={comment} onChange={(e: any) => setComment(e.target.value)} required className="mb-8" />
+                                    <button type="submit" disabled={isSubmitting} className="w-full bg-yellow-400 text-black font-black py-5 rounded-2xl uppercase text-xs shadow-lg shadow-yellow-100 hover:scale-[1.02] transition-all disabled:opacity-50">
+                                        Kirim Ulasan
+                                    </button>
+                                </form>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+
+                {isRefundModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-6 text-slate-800">
+                        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsRefundModalOpen(false)} className="absolute inset-0 bg-yellow-900/5 backdrop-blur-sm" />
+                        <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-yellow-100 p-10">
+                            <h2 className="text-2xl font-black tracking-tighter mb-8 uppercase">Pengajuan <span className="text-yellow-400 italic">Refund</span></h2>
+                            <form onSubmit={handleRefundSubmit} className="space-y-6">
+                                <Input label="Alasan" placeholder="Kenapa ajukan refund?" value={refundData.reason} onChange={e => setRefundData({...refundData, reason: (e.target as HTMLInputElement).value})} required />
+                                <Input label="Nama Bank" placeholder="Contoh: BCA / DANA" value={refundData.bank_name} onChange={e => setRefundData({...refundData, bank_name: (e.target as HTMLInputElement).value})} required />
+                                <Input label="No. Rekening" placeholder="Nomor rekening tujuan" value={refundData.account_number} onChange={e => setRefundData({...refundData, account_number: (e.target as HTMLInputElement).value})} required />
+                                <Input label="Atas Nama" placeholder="Nama pemilik rekening" value={refundData.account_holder} onChange={e => setRefundData({...refundData, account_holder: (e.target as HTMLInputElement).value})} required />
+                                <button type="submit" disabled={isSubmitting} className="w-full bg-yellow-400 text-black font-black py-5 rounded-2xl uppercase text-xs shadow-lg transition-all disabled:opacity-50">
+                                    {isSubmitting ? 'Memproses...' : 'Kirim Pengajuan'}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            <footer className="w-full py-16 px-8 bg-white border-t border-yellow-50 flex flex-col items-center justify-center gap-4">
+                <div className="text-slate-300 text-[10px] font-bold uppercase tracking-[0.4em] text-center">
+                    Sistem Reservasi Surabaya © 2026 <br />
+                    Semua hak cipta dilindungi undang-undang.
                 </div>
-            )}
+            </footer>
         </div>
     );
 };
