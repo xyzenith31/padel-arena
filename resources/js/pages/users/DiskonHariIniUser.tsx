@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
-import { TicketPercent, Copy, CheckCircle2, Loader2, Sparkles, Clock } from 'lucide-react';
+import { TicketPercent, Copy, CheckCircle2, Loader2, Sparkles, CalendarDays } from 'lucide-react';
 import Notification, { NotificationType } from '../../components/ui/Notification';
 
+interface VoucherUser {
+    id: number;
+    code: string;
+    discount_percentage: number;
+    type: string;
+    valid_until: string;
+}
+
 const DiskonHariIniUser = () => {
-    const [vouchers, setVouchers] = useState<any[]>([]);
+    const [vouchers, setVouchers] = useState<VoucherUser[]>([]);
     const [loading, setLoading] = useState(true);
     const [copiedId, setCopiedId] = useState<number | null>(null);
     const [notif, setNotif] = useState({
@@ -46,6 +54,12 @@ const DiskonHariIniUser = () => {
         setTimeout(() => setCopiedId(null), 2000);
     };
 
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('id-ID', {
+            day: 'numeric', month: 'long', year: 'numeric'
+        });
+    };
+
     if (loading) return (
         <div className="flex h-[80vh] items-center justify-center bg-[#FDFDF9]">
             <Loader2 className="w-12 h-12 text-yellow-500 animate-spin" />
@@ -70,7 +84,7 @@ const DiskonHariIniUser = () => {
                         Diskon & <span className="text-yellow-500">Promo</span> <br/>Hari Ini
                     </h1>
                     <p className="text-yellow-800/80 font-medium text-lg">
-                        Ambil kupon diskon di bawah ini dan gunakan untuk hemat biaya booking lapanganmu!
+                        Ambil kupon diskon di bawah ini. Voucher akan hilang otomatis setelah digunakan.
                     </p>
                 </motion.div>
             </section>
@@ -80,7 +94,7 @@ const DiskonHariIniUser = () => {
                     <div className="text-center py-20 bg-yellow-50 rounded-[3rem] border-2 border-dashed border-yellow-200">
                         <TicketPercent size={48} className="mx-auto text-yellow-300 mb-4" />
                         <h3 className="text-xl font-black text-yellow-700">Belum ada promo aktif</h3>
-                        <p className="text-yellow-600">Cek lagi nanti ya!</p>
+                        <p className="text-yellow-600">Anda sudah menggunakan semua voucher atau belum ada promo baru.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -130,7 +144,7 @@ const DiskonHariIniUser = () => {
                                 </div>
                                 
                                 <div className="flex items-center gap-2 text-yellow-700/60 text-[10px] font-bold uppercase tracking-widest mt-2">
-                                    <Clock size={12} /> Berlaku Terbatas
+                                    <CalendarDays size={12} /> Exp: {formatDate(voucher.valid_until)}
                                 </div>
                             </motion.div>
                         ))}

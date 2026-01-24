@@ -10,11 +10,15 @@ return new class extends Migration
     {
         Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('code')->unique();
             $table->integer('discount_percentage');
             $table->enum('type', ['all', 'session', 'custom'])->default('all'); 
+            $table->dateTime('valid_until')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_used')->default(false);
             $table->timestamps();
+             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
         Schema::create('voucher_usages', function (Blueprint $table) {

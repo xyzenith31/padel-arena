@@ -53,6 +53,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store']);
     Route::post('/vouchers/check', [VoucherController::class, 'check']);
     Route::get('/admin/vouchers', [VoucherController::class, 'index']);
+    Route::post('/admin/vouchers', [App\Http\Controllers\Api\VoucherController::class, 'store']);
+    Route::get('/my-vouchers', [App\Http\Controllers\Api\VoucherController::class, 'index']);
     Route::post('/admin/vouchers', [VoucherController::class, 'store']);
     Route::delete('/admin/vouchers/{id}', [VoucherController::class, 'destroy']);
     Route::get('/vouchers-active', [VoucherController::class, 'active']);

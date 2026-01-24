@@ -10,9 +10,18 @@ class Voucher extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'code',
         'discount_percentage',
         'type',
-        'is_active'
+        'valid_until',
+        'is_active',
+        'is_used'
+    ];
+
+    protected $casts = [
+        'valid_until' => 'datetime',
+        'is_active' => 'boolean',
+        'is_used' => 'boolean',
     ];
 }

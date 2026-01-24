@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Trash2, Plus, Tag, TicketPercent } from 'lucide-react';
+import { Trash2, Plus, Tag, TicketPercent, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Voucher {
@@ -8,6 +8,7 @@ interface Voucher {
     code: string;
     discount_percentage: number;
     type: 'all' | 'session' | 'custom';
+    valid_until: string;
     is_active: boolean;
 }
 
@@ -17,6 +18,7 @@ const KelolaDiskonAdmin = () => {
     const [code, setCode] = useState('');
     const [percent, setPercent] = useState('');
     const [type, setType] = useState<'all' | 'session' | 'custom'>('all');
+    const [validUntil, setValidUntil] = useState('');
 
     const fetchVouchers = async () => {
         try {
@@ -34,19 +36,23 @@ const KelolaDiskonAdmin = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+
         try {
             await axios.post('/api/admin/vouchers', {
                 code: code.toUpperCase(),
                 discount_percentage: parseInt(percent),
-                type: type
+                type: type,
+                valid_until: validUntil,
             });
+            
             setCode('');
             setPercent('');
             setType('all');
+            setValidUntil(''); 
             fetchVouchers();
             alert('Voucher berhasil dibuat!');
         } catch (error) {
-            alert('Gagal membuat voucher. Pastikan kode unik dan data benar.');
+            alert('Gagal membuat voucher. Pastikan data benar.');
         } finally {
             setLoading(false);
         }
@@ -61,6 +67,13 @@ const KelolaDiskonAdmin = () => {
                 alert('Gagal menghapus voucher.');
             }
         }
+    };
+
+    const formatDate = (dateString: string) => {
+        if (!dateString) return 'Selamanya';
+        return new Date(dateString).toLocaleDateString('id-ID', {
+            day: 'numeric', month: 'short', year: 'numeric'
+        });
     };
 
     return (
@@ -89,15 +102,26 @@ const KelolaDiskonAdmin = () => {
                             />
                         </div>
                         
-                        <div>
-                            <label className="text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Persentase Diskon (%)</label>
-                            <input 
-                                type="number" required min="1" max="100"
-                                placeholder="10"
-                                value={percent}
-                                onChange={e => setPercent(e.target.value)}
-                                className="w-full mt-2 bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 font-bold focus:bg-white focus:border-yellow-400 outline-none transition-all"
-                            />
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Diskon (%)</label>
+                                <input 
+                                    type="number" required min="1" max="100"
+                                    placeholder="10"
+                                    value={percent}
+                                    onChange={e => setPercent(e.target.value)}
+                                    className="w-full mt-2 bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 font-bold focus:bg-white focus:border-yellow-400 outline-none transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs font-black uppercase text-slate-400 tracking-widest ml-1">Batas Waktu</label>
+                                <input 
+                                    type="date" required
+                                    value={validUntil}
+                                    onChange={e => setValidUntil(e.target.value)}
+                                    className="w-full mt-2 bg-slate-50 border-2 border-slate-50 rounded-2xl px-4 py-3 font-bold text-slate-600 focus:bg-white focus:border-yellow-400 outline-none transition-all"
+                                />
+                            </div>
                         </div>
 
                         <div>
@@ -126,7 +150,7 @@ const KelolaDiskonAdmin = () => {
                     </form>
                 </div>
 
-                <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 h-fit">
                     {vouchers.map((voucher) => (
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.9 }}
@@ -140,9 +164,12 @@ const KelolaDiskonAdmin = () => {
 
                             <div className="relative z-10 flex justify-between items-start">
                                 <div>
-                                    <div className="flex items-center gap-2 mb-2">
+                                    <div className="flex flex-wrap items-center gap-2 mb-3">
                                         <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${voucher.type === 'all' ? 'bg-blue-100 text-blue-600' : voucher.type === 'session' ? 'bg-purple-100 text-purple-600' : 'bg-orange-100 text-orange-600'}`}>
-                                            {voucher.type === 'all' ? 'Semua Mode' : voucher.type === 'session' ? 'Mode Sesi' : 'Mode Manual'}
+                                            {voucher.type === 'all' ? 'Semua' : voucher.type === 'session' ? 'Sesi' : 'Manual'}
+                                        </span>
+                                        <span className="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-500 flex items-center gap-1">
+                                            <Calendar size={10} /> {formatDate(voucher.valid_until)}
                                         </span>
                                     </div>
                                     <h3 className="text-2xl font-black text-slate-800 tracking-tighter">{voucher.code}</h3>
