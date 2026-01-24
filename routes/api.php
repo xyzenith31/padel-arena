@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\PadelController;
 use App\Http\Controllers\Api\PadelPublicController; 
 use App\Http\Controllers\Api\RefundController;
+use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\ComplaintController;
 use App\Http\Controllers\Api\ReviewController;
@@ -50,4 +51,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-bookings', [BookingController::class, 'myBookings']);
     Route::post('/midtrans/check-status', [PaymentController::class, 'checkTransactionStatus']);
     Route::post('/reviews', [ReviewController::class, 'store']);
+    Route::post('/vouchers/check', [VoucherController::class, 'check']);
+    Route::get('/admin/vouchers', [VoucherController::class, 'index']);
+    Route::post('/admin/vouchers', [VoucherController::class, 'store']);
+    Route::delete('/admin/vouchers/{id}', [VoucherController::class, 'destroy']);
+    Route::get('/vouchers-active', [VoucherController::class, 'active']);
 });

@@ -2,7 +2,7 @@ import { Outlet, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import ProfileDropdownUser from '../components/ux/ProfileDropdownUser';
 import { motion } from 'framer-motion';
-import { Home, Search, Calendar, LifeBuoy } from 'lucide-react';
+import { Home, Search, Calendar, LifeBuoy, TicketPercent } from 'lucide-react';
 
 export default function UserLayout() {
     const { user, isLoading } = useAuth();
@@ -23,6 +23,7 @@ export default function UserLayout() {
         { name: 'Cari Lapangan', path: '/booking', icon: <Search size={20} /> },
         { name: 'Riwayat Reservasi', path: '/booking/reservasi', icon: <Calendar size={20} /> },
         { name: 'Layanan Pelanggan', path: '/support', icon: <LifeBuoy size={20} /> },
+        { name: 'Promo & Diskon', path: '/diskon', icon: <TicketPercent size={20} /> },
     ];
 
     return (

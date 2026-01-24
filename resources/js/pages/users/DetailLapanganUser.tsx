@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion'; // AnimatePresence sekarang digunakan
+import { motion, AnimatePresence } from 'framer-motion'; 
 import { 
     MapPin, Info, Star, Calendar, 
     ChevronLeft, Shield, Zap, 
-    ArrowRight, Loader2, Trophy, X, Maximize2 
-} from 'lucide-react'; // Menghapus Clock, Check, Grid, MessageCircle, Camera, Sparkles yang tidak digunakan
+    ArrowRight, Loader2, Trophy, X, Maximize2,
+    TicketPercent, CheckCircle2
+} from 'lucide-react'; 
 import Notification, { NotificationType } from '../../components/ui/Notification';
 
 declare global {
@@ -55,10 +56,10 @@ const DetailLapanganUser = () => {
     const [bookingMode, setBookingMode] = useState<'custom' | 'session'>('session');
     const [sessionDuration, setSessionDuration] = useState(60);
     const [estimatedPrice, setEstimatedPrice] = useState(0);
-    
-    // State untuk Modal Foto
+    const [voucherCode, setVoucherCode] = useState('');
+    const [appliedVoucher, setAppliedVoucher] = useState<any>(null);
+    const [isCheckingVoucher, setIsCheckingVoucher] = useState(false);
     const [selectedGalleryImg, setSelectedGalleryImg] = useState<string | null>(null);
-
     const [notif, setNotif] = useState<NotificationState>({
         isOpen: false,
         type: 'info',
@@ -110,6 +111,45 @@ const DetailLapanganUser = () => {
         }
     }, [startTime, endTime, court]);
 
+    useEffect(() => {
+        setAppliedVoucher(null);
+        setVoucherCode('');
+    }, [bookingMode, selectedDate, startTime, endTime]);
+
+    const handleCheckVoucher = async () => {
+        if (!voucherCode) return;
+        setIsCheckingVoucher(true);
+        try {
+            const res = await axios.post('/api/vouchers/check', {
+                code: voucherCode,
+                booking_mode: bookingMode
+            });
+            setAppliedVoucher(res.data.data);
+            setNotif({
+                isOpen: true,
+                type: 'success',
+                title: 'Voucher Berhasil',
+                message: `Diskon ${res.data.data.discount_percentage}% diterapkan!`,
+                singleButton: true
+            });
+        } catch (error: any) {
+            setAppliedVoucher(null);
+            setNotif({
+                isOpen: true,
+                type: 'error',
+                title: 'Voucher Gagal',
+                message: error.response?.data?.message || 'Kode voucher tidak valid.',
+                singleButton: true
+            });
+        } finally {
+            setIsCheckingVoucher(false);
+        }
+    };
+
+    const finalPrice = appliedVoucher 
+        ? estimatedPrice - (estimatedPrice * (appliedVoucher.discount_percentage / 100))
+        : estimatedPrice;
+
     const checkStatusAndRedirect = async (bookingId: string) => {
         try {
             await axios.post('/api/midtrans/check-status', { order_id: bookingId });
@@ -128,7 +168,9 @@ const DetailLapanganUser = () => {
                 padel_court_id: id,
                 booking_date: selectedDate,
                 start_time: startTime,
-                end_time: endTime
+                end_time: endTime,
+                voucher_code: appliedVoucher ? appliedVoucher.code : null, 
+                booking_mode: bookingMode
             };
 
             const response = await axios.post('/api/bookings', payload);
@@ -506,14 +548,70 @@ const DetailLapanganUser = () => {
                                 </div>
                             </div>
 
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Kode Voucher</label>
+                                <div className="flex gap-2">
+                                    <div className="relative flex-1">
+                                        <TicketPercent className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                        <input 
+                                            type="text" 
+                                            placeholder="MASUKKAN KODE"
+                                            value={voucherCode}
+                                            onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                                            disabled={appliedVoucher !== null}
+                                            className={`w-full bg-slate-50 border-2 border-slate-50 rounded-2xl pl-12 pr-4 py-4 text-sm font-black focus:bg-white focus:border-yellow-400 outline-none transition-all uppercase ${appliedVoucher ? 'text-green-600 border-green-100 bg-green-50' : ''}`}
+                                        />
+                                        {appliedVoucher && (
+                                            <CheckCircle2 className="absolute right-4 top-1/2 -translate-y-1/2 text-green-500" size={18} />
+                                        )}
+                                    </div>
+                                    {appliedVoucher ? (
+                                        <button 
+                                            type="button"
+                                            onClick={() => { setAppliedVoucher(null); setVoucherCode(''); }}
+                                            className="bg-red-50 text-red-500 px-4 rounded-2xl font-bold hover:bg-red-100 transition-all"
+                                        >
+                                            <X size={20} />
+                                        </button>
+                                    ) : (
+                                        <button 
+                                            type="button"
+                                            onClick={handleCheckVoucher}
+                                            disabled={!voucherCode || isCheckingVoucher || estimatedPrice <= 0}
+                                            className="bg-slate-900 text-white px-6 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-yellow-500 hover:text-yellow-950 transition-all disabled:opacity-50"
+                                        >
+                                            {isCheckingVoucher ? <Loader2 className="animate-spin" size={16} /> : 'Pakai'}
+                                        </button>
+                                    )}
+                                </div>
+                                {appliedVoucher && (
+                                    <p className="text-xs text-green-600 font-bold ml-2">
+                                        Voucher hemat {appliedVoucher.discount_percentage}% aktif!
+                                    </p>
+                                )}
+                            </div>
+
                             <div className="bg-yellow-400 p-8 rounded-[3rem] shadow-2xl shadow-yellow-500/40 space-y-4">
                                 <div className="flex justify-between items-center text-yellow-950/60 text-[10px] font-black uppercase tracking-widest">
                                     <span>Rate / Jam</span>
                                     <span>Rp {parseInt(court.price_per_hour).toLocaleString('id-ID')}</span>
                                 </div>
+                                
+                                <div className="flex justify-between items-center text-yellow-950/80 text-xs font-bold border-b border-yellow-950/10 pb-4">
+                                    <span>Subtotal</span>
+                                    <span>Rp {estimatedPrice.toLocaleString('id-ID')}</span>
+                                </div>
+
+                                {appliedVoucher && (
+                                    <div className="flex justify-between items-center text-green-800 text-xs font-black">
+                                        <span>Diskon ({appliedVoucher.discount_percentage}%)</span>
+                                        <span>- Rp {(estimatedPrice - finalPrice).toLocaleString('id-ID')}</span>
+                                    </div>
+                                )}
+
                                 <div className="flex justify-between items-center text-yellow-950">
                                     <span className="text-xs font-black uppercase tracking-widest">Total Bayar</span>
-                                    <span className="text-3xl font-black tracking-tighter">Rp {estimatedPrice.toLocaleString('id-ID')}</span>
+                                    <span className="text-3xl font-black tracking-tighter">Rp {finalPrice.toLocaleString('id-ID')}</span>
                                 </div>
                             </div>
 

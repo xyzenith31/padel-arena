@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\PadelCourt;
+use App\Models\Voucher; 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +48,9 @@ class BookingController extends Controller
                 'date' => $booking->booking_date,
                 'time' => substr($booking->start_time, 0, 5) . ' - ' . substr($booking->end_time, 0, 5),
                 'total_price' => $booking->total_price,
+                'discount_amount' => $booking->discount_amount,
+                'final_price' => $booking->final_price,
+                'voucher_code' => $booking->voucher_code,
                 'status' => $booking->status,
                 'created_at' => $booking->created_at->format('Y-m-d H:i'),
             ];
@@ -70,6 +74,8 @@ class BookingController extends Controller
             'booking_date' => 'required|date|after_or_equal:today',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
+            'voucher_code' => 'nullable|string|exists:vouchers,code',
+            'booking_mode' => 'nullable|in:session,custom', 
         ]);
 
         $court = PadelCourt::find($request->padel_court_id);
@@ -120,7 +126,39 @@ class BookingController extends Controller
 
         $durationMinutes = $startTime->diffInMinutes($endTime);
         $hours = $durationMinutes / 60;
-        $totalPrice = $hours * $court->price_per_hour;
+        $originalPrice = $hours * $court->price_per_hour;
+        $discountAmount = 0;
+        $finalPrice = $originalPrice;
+        $voucherCodeUsed = null;
+        $activeVoucher = null;
+
+        if ($request->voucher_code) {
+            $voucher = Voucher::where('code', $request->voucher_code)
+                ->where('is_active', true)
+                ->first();
+
+            if ($voucher) {
+                $alreadyUsed = DB::table('voucher_usages')
+                    ->where('user_id', auth()->id())
+                    ->where('voucher_id', $voucher->id)
+                    ->exists();
+
+                if ($alreadyUsed) {
+                    return response()->json(['message' => 'Anda sudah menggunakan voucher ini sebelumnya.'], 422);
+                }
+
+                $mode = $request->booking_mode ?? 'custom'; 
+                if ($voucher->type === 'all' || $voucher->type === $mode) {
+                    $discountAmount = $originalPrice * ($voucher->discount_percentage / 100);
+                    $finalPrice = $originalPrice - $discountAmount;
+                    
+                    if ($finalPrice < 0) $finalPrice = 0;
+                    
+                    $voucherCodeUsed = $voucher->code;
+                    $activeVoucher = $voucher; 
+                }
+            }
+        }
 
         try {
             DB::beginTransaction();
@@ -132,14 +170,26 @@ class BookingController extends Controller
                 'start_time' => $start,
                 'end_time' => $end,
                 'duration_minutes' => $durationMinutes,
-                'total_price' => $totalPrice,
+                'total_price' => $originalPrice, 
+                'discount_amount' => $discountAmount, 
+                'final_price' => $finalPrice,
+                'voucher_code' => $voucherCodeUsed,
                 'status' => 'pending'
             ]);
+
+            if ($activeVoucher) {
+                DB::table('voucher_usages')->insert([
+                    'user_id' => auth()->id(),
+                    'voucher_id' => $activeVoucher->id,
+                    'booking_id' => $booking->id,
+                    'used_at' => now(),
+                ]);
+            }
 
             $params = [
                 'transaction_details' => [
                     'order_id' => $booking->id,
-                    'gross_amount' => (int) $totalPrice,
+                    'gross_amount' => (int) $finalPrice,
                 ],
                 'customer_details' => [
                     'first_name' => auth()->user()->name,
@@ -148,9 +198,9 @@ class BookingController extends Controller
                 'item_details' => [
                     [
                         'id' => 'BOOKING-PADEL',
-                        'price' => (int) $totalPrice,
+                        'price' => (int) $finalPrice,
                         'quantity' => 1,
-                        'name' => "Sewa Lapangan {$court->name} ($durationMinutes Menit)"
+                        'name' => "Sewa Lapangan {$court->name} ($durationMinutes Menit)" . ($voucherCodeUsed ? " [Diskon Applied]" : "")
                     ]
                 ],
                 'callbacks' => [
@@ -168,7 +218,9 @@ class BookingController extends Controller
                 'data' => [
                     'booking_id' => $booking->id,
                     'snap_token' => $snapToken,
-                    'total_price' => $totalPrice,
+                    'original_price' => $originalPrice,
+                    'discount_amount' => $discountAmount,
+                    'final_price' => $finalPrice,
                     'details' => "{$dayName}, $date ($start - $end)"
                 ]
             ], 201);
@@ -208,6 +260,8 @@ class BookingController extends Controller
                     'date' => $booking->booking_date,
                     'time' => substr($booking->start_time, 0, 5) . ' - ' . substr($booking->end_time, 0, 5),
                     'total_price' => $booking->total_price,
+                    'final_price' => $booking->final_price ?? $booking->total_price,
+                    'voucher_code' => $booking->voucher_code,
                     'status' => $booking->status,
                     'status_label' => $statusLabel,
                     'snap_token' => $booking->snap_token,

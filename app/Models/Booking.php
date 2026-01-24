@@ -12,9 +12,18 @@ class Booking extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     protected $fillable = [
-        'id', 'user_id', 'padel_court_id', 'booking_date', 
-        'start_time', 'end_time', 'duration_minutes', 
-        'total_price', 'status', 'snap_token'
+        'user_id',
+        'padel_court_id',
+        'booking_date',
+        'start_time',
+        'end_time',
+        'duration_minutes',
+        'total_price',
+        'discount_amount',
+        'final_price',
+        'voucher_code',
+        'status',
+        'snap_token'
     ];
 
     protected static function boot()
