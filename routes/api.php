@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\PadelController;
 use App\Http\Controllers\Api\PadelPublicController; 
 use App\Http\Controllers\Api\RefundController;
+use App\Http\Controllers\Api\UserDashboardController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\VoucherController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\ComplaintController;
@@ -35,6 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/complaints/{id}', [ComplaintController::class, 'update']);
     Route::post('/refunds', [RefundController::class, 'store']);
     Route::get('/admin/refunds', [RefundController::class, 'index']);
+    Route::get('/admin/dashboard', [DashboardController::class, 'index']);
+    Route::get('/user/dashboard', [UserDashboardController::class, 'index']);
     Route::post('/admin/refunds/{id}/process', [RefundController::class, 'process']);
     Route::get('/admin/users', [UserManagementController::class, 'index']);
     Route::get('/admin/users/{id}', [UserManagementController::class, 'show']);
