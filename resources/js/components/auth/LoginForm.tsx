@@ -40,8 +40,6 @@ export default function LoginForm() {
 
     const getRedirectPath = (role: string) => {
         switch (role) {
-            case 'teknisi':
-                return '/teknisi/dashboard';
             case 'admin':
                 return '/admin/dashboard';
             case 'user':

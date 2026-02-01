@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class SocialAuthController extends Controller
 {
@@ -71,15 +74,27 @@ class SocialAuthController extends Controller
                 'phone_number' => $request->phone_number,
                 'password' => Hash::make($request->password),
                 'email_verified_at' => now(),
-                'role' => 'user', // Default role
+                'role' => 'user',
                 'avatar' => $request->avatar ?? null, 
             ]
         );
 
+        if ($user->wasRecentlyCreated) {
+            Voucher::create([
+                'user_id' => $user->id,
+                'code' => 'WELCOME-' . strtoupper(Str::random(6)),
+                'discount_percentage' => 20,
+                'type' => 'all',
+                'valid_until' => Carbon::now()->addWeeks(2),
+                'is_active' => true,
+                'is_used' => false,
+            ]);
+        }
+
         Auth::login($user);
 
         return response()->json([
-            'message' => 'Registrasi berhasil',
+            'message' => 'Registrasi berhasil. Voucher pengguna baru telah ditambahkan.',
             'user' => $user
         ]);
     }

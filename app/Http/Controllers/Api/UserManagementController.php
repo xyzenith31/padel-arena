@@ -53,7 +53,7 @@ class UserManagementController extends Controller
     }
 
     /**
-     * Membuat akun baru (User atau Teknisi).
+     * Membuat akun baru (User).
      */
     public function store(Request $request)
     {
@@ -63,7 +63,7 @@ class UserManagementController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'phone_number' => 'required|string|max:20',
             'password' => 'required|string|min:8',
-            'role' => ['required', Rule::in(['user', 'teknisi'])],
+            'role' => ['required', Rule::in(['user'])],
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -101,7 +101,7 @@ class UserManagementController extends Controller
             'name' => 'sometimes|string|max:255',
             'email' => ['sometimes', 'email', Rule::unique('users')->ignore($user->id)],
             'phone_number' => 'sometimes|string|max:20',
-            'role' => ['sometimes', Rule::in(['user', 'teknisi', 'admin'])],
+            'role' => ['sometimes', Rule::in(['user', 'admin'])],
             'password' => 'nullable|string|min:8',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);

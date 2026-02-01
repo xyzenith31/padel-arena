@@ -103,7 +103,6 @@ const ManajemenPengguna = () => {
     const getRoleBadge = (role: string) => {
         switch(role) {
             case 'admin': return <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><Shield size={12}/> Admin</span>;
-            case 'teknisi': return <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><UserCog size={12}/> Teknisi</span>;
             default: return <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold flex items-center gap-1 w-fit"><User size={12}/> User</span>;
         }
     };
@@ -128,7 +127,6 @@ const ManajemenPengguna = () => {
                 >
                     <option value="">Semua Role</option>
                     <option value="admin">Admin</option>
-                    <option value="teknisi">Teknisi</option>
                     <option value="user">User</option>
                 </select>
 
@@ -284,7 +282,6 @@ const ManajemenPengguna = () => {
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
                                     <select name="role" onChange={handleInputChange} value={formData.role} className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none transition">
                                         <option value="user">User</option>
-                                        <option value="teknisi">Teknisi</option>
                                         <option value="admin">Admin</option>
                                     </select>
                                 </div>

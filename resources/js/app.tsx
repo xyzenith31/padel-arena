@@ -15,7 +15,7 @@ import 'nprogress/nprogress.css';
 // Layouts
 import AuthLayout from './layouts/AuthLayout';
 import AdminLayout from './layouts/AdminLayout';
-import UserLayout from './layouts/UserLayout';
+import UserLayout from './layouts/UserLayout'; 
 
 // Pages Auth
 import LoginPage from './pages/auth/LoginPage';
@@ -32,6 +32,7 @@ import RefundPelangganAdmin from './pages/admin/RefundPelangganAdmin';
 import ProfileAdmin from './pages/admin/ProfileAdmin';
 import ManajemenPengguna from './pages/admin/ManajemenPengguna';
 import KelolaLapangan from './pages/admin/KelolaLapangan';
+import KelolaDiskonAdmin from './pages/admin/KelolaDiskonAdmin';
 import KeluhanPelangganAdmin from './pages/admin/KeluhanPelangganAdmin';
 import CreateEditLapangan from './pages/admin/CreateEditLapangan';
 
@@ -41,6 +42,7 @@ import ProfileUser from './pages/users/ProfileUser';
 import BookingLapanganUser from './pages/users/BookingLapanganUser';
 import DetailReservasiUser from './pages/users/DetailReservasiUser';
 import DetailLapanganUser from './pages/users/DetailLapanganUser';
+import DiskonHariIniUser from './pages/users/DiskonHariIniUser'; 
 import CustomerService from './pages/users/CustomerService';
 import DetailPaymentUser from './pages/users/DetailPaymentUser';
 import ReservasiLapangan from './pages/users/ReservasiLapangan';
@@ -101,6 +103,7 @@ const App = () => {
                                 <Route path="bookings" element={<JadwalOrderAdmin />} />
                                 <Route path="refunds" element={<RefundPelangganAdmin />} />
                                 <Route path="padel-courts" element={<KelolaLapangan />} />
+                                <Route path="vouchers" element={<KelolaDiskonAdmin />} />
                                 <Route path="complaints" element={<KeluhanPelangganAdmin />} />
                                 <Route path="padel-courts/create" element={<CreateEditLapangan />} />
                                 <Route path="padel-courts/edit/:id" element={<CreateEditLapangan />} />
@@ -114,7 +117,8 @@ const App = () => {
                                 <Route path="profile" element={<ProfileUser />} />
                                 <Route path="booking" element={<BookingLapanganUser />} />
                                 <Route path="booking/detail/:id" element={<DetailReservasiUser />} />
-                                <Route path="support" element={<CustomerService />} /> {/* URL User */}
+                                <Route path="support" element={<CustomerService />} />
+                                <Route path="diskon" element={<DiskonHariIniUser />} />
                                 <Route path="booking/court/:id" element={<DetailLapanganUser />} />
                                 <Route path="booking/reservasi" element={<ReservasiLapangan />} />
                                 <Route path="booking/payment/:id" element={<DetailPaymentUser />} />

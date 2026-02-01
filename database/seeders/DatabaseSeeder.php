@@ -17,21 +17,35 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
-            'name' => 'Moch Donny Indra Prayuda',
-            'email' => 'mochdonnyindraprayuda@gmail.com',
-            'phone_number' => '085198342115',
+            'name' => 'Padel Admin',
+            'email' => 'simorejogang3@gmail.com',
+            'phone_number' => '085198342110',
             'password' => Hash::make('admin123'),
             'role' => 'admin',
             'email_verified_at' => now(),
         ]);
 
         User::factory()->create([
-            'name' => 'Donny User',
-            'email' => 'm.donnyindraprayuda@gmail.com',
-            'phone_number' => '085194928331',
+            'name' => 'Padel User',
+            'email' => 'suprazr535@gmail.com',
+            'phone_number' => '085198342115',
             'password' => Hash::make('user123'),
             'role' => 'user',
             'email_verified_at' => now(),
+        ]);
+
+        User::factory()->create([
+            'name' => 'User Dimas',
+            'email' => 'dimasrosadibaru@gmail.com',
+            'phone_number' => '085198342115',
+            'password' => Hash::make('user1234'),
+            'role' => 'user',
+            'email_verified_at' => now(),
+        ]);
+
+        $this->call([
+            PadelCourtSeeder::class,
+            VoucherSeeder::class,
         ]);
     }
 }
